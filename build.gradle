@@ -1,0 +1,31 @@
+plugins {
+    id 'groovy'
+    id 'java-gradle-plugin'
+    id 'maven-publish' // Útil se quiser publicar localmente ou no JitPack/Maven Central
+}
+
+group = 'com.waltsoft' // Substitua pelo seu grupo/namespace
+version = '0.0.1'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // Dependências necessárias para interagir com a API do Gradle
+    implementation gradleApi()
+    implementation localGroovy()
+}
+
+tasks.withType(ProcessResources).configureEach {
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+}
+
+gradlePlugin {
+    plugins {
+        mermaidbPlugin {
+            id = 'com.waltsoft.mermaidb' // O ID que os usuários usarão no bloco `plugins`
+            implementationClass = 'com.waltsoft.MermaidbPlugin' // A classe principal do seu plugin
+        }
+    }
+}
