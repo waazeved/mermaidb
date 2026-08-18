@@ -1,4 +1,4 @@
-package com.waltsoft
+package com.waltsoft.mermaidb
 
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin

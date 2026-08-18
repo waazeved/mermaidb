@@ -1,4 +1,4 @@
-package com.waltsoft
+package com.waltsoft.mermaidb
 
 class MermaidbExtension {
     DatabaseType dbType
