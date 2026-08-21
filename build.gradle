@@ -25,7 +25,7 @@ gradlePlugin {
     plugins {
         mermaidbPlugin {
             id = 'com.waltsoft.mermaidb' // O ID que os usuários usarão no bloco `plugins`
-            implementationClass = 'com.waltsoft.MermaidbPlugin' // A classe principal do seu plugin
+            implementationClass = 'com.waltsoft.mermaidb.MermaidbPlugin' // A classe principal do seu plugin
         }
     }
 }

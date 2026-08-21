@@ -1,10 +1,18 @@
-package com.waltsoft.mermaidb
+package com.waltsoft.mermaidb.database
 
-class DatabaseDockerCommandFactory {
+import com.waltsoft.mermaidb.extension.Extension
 
-    public static final String CONTAINER_NAME = 'mermaid-temp-db'
+class Database {
 
-    static List<String> buildRunCommand(MermaidbExtension extension) {
+    public static final String DOCKER_CONTAINER_NAME = 'mermaidb-temp-db'
+
+    private final Extension extension;
+
+    Database(Extension extension) {
+        this.extension = extension
+    }
+
+    List<String> buildRunCommand() {
         def dbType = extension.dbType
 
         if (dbType == DatabaseType.SQLITE) {
@@ -12,14 +20,14 @@ class DatabaseDockerCommandFactory {
         }
 
         List<String> command = [
-                'docker', 'run', '--name', 'mermaid-temp-db', '-d'
+                'docker', 'run', '--name', DOCKER_CONTAINER_NAME, '-d'
         ]
 
         command.addAll(['-p', "54332:${dbType.defaultPort}"])
 
         switch (dbType) {
             case DatabaseType.POSTGRESQL:
-            case DatabaseType.ALLOYDB_OMNI: // Certifique-se de que o nome bate com o seu Enum
+            case DatabaseType.ALLOYDB:
             case DatabaseType.COCKROACHDB:
                 command.addAll([
                         '-e', "POSTGRES_USER=${dbType.defaultUser}",
@@ -46,5 +54,9 @@ class DatabaseDockerCommandFactory {
         def formattedImage = String.format(dbType.dockerImageFormat, extension.dbVersion)
         command.add(extension.dbCustomDockerImage ?: formattedImage)
         return command
+    }
+
+    List<String> buildRemoveCommand() {
+        return ['docker', 'rm', '-f', Database.DOCKER_CONTAINER_NAME]
     }
 }

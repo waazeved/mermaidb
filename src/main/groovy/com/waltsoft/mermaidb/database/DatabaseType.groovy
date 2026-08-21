@@ -1,4 +1,4 @@
-package com.waltsoft.mermaidb
+package com.waltsoft.mermaidb.database
 
 enum DatabaseType {
 
