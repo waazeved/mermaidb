@@ -6,14 +6,14 @@ import com.waltsoft.mermaidb.extension.Extension
 import org.gradle.api.Project
 import org.gradle.api.tasks.Exec
 
-class StartDatabaseTask implements  Task {
+class StartDatabaseTask implements Task {
 
     private static final String TASK_NAME = 'startDatabase'
 
-    private final Extension extension;
-    private final Project project;
-    private final Database database;
-    private final CleanDatabaseTask cleanDatabaseTask;
+    private final Extension extension
+    private final Project project
+    private final Database database
+    private final CleanDatabaseTask cleanDatabaseTask
 
     StartDatabaseTask(Project project, Extension extension, Database database, CleanDatabaseTask cleanDatabaseTask) {
         this.extension = extension
@@ -27,7 +27,7 @@ class StartDatabaseTask implements  Task {
         project.tasks.register(TASK_NAME, Exec) {
             dependsOn cleanDatabaseTask.name()
 
-            commandLine database.buildRunCommand(extension)
+            commandLine database.buildRunCommand()
 
             doLast {
                 if (extension.dbType != DatabaseType.SQLITE) {

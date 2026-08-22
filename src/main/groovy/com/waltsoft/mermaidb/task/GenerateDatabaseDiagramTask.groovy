@@ -9,15 +9,15 @@ import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.tasks.Exec
 
-class GenerateDatabaseDiagramTask implements Task{
+class GenerateDatabaseDiagramTask implements Task {
 
     private static final String TASK_NAME = 'generateDatabaseDiagram'
     private static final String FORCE_GENERATE_PROPERTY = "forceGenerate"
 
-    private final Extension extension;
-    private final Project project;
+    private final Extension extension
+    private final Project project
     private final MigrationTask migrationTask
-    private final StopDatabaseTask stopDatabaseTask;
+    private final StopDatabaseTask stopDatabaseTask
 
     GenerateDatabaseDiagramTask(Project project,
                                 Extension extension,
@@ -33,7 +33,7 @@ class GenerateDatabaseDiagramTask implements Task{
     void register() {
         project.tasks.register(TASK_NAME, Exec) {
 
-            group = 'documentation'
+            group = 'mermaidb'
             description = 'Generates Mermaid diagrams from database schema'
             dependsOn migrationTask.name()
 
@@ -46,7 +46,7 @@ class GenerateDatabaseDiagramTask implements Task{
                     forceGenerate = project.property(FORCE_GENERATE_PROPERTY).toString().toBoolean()
                 }
 
-                boolean migrationsChanged = git.checkIfMigrationsChanged(project, extension.changeLogFilePath)
+                boolean migrationsChanged = git.checkIfMigrationsChanged()
 
                 if (!migrationsChanged && !forceGenerate) {
                     println "✅ No changes found in the migrations file. Skipping diagram generation to save time."
@@ -65,6 +65,8 @@ class GenerateDatabaseDiagramTask implements Task{
                     println "🧹 Cleaning up old diagram files in '${extension.outputDirPath}'..."
                     project.delete(project.fileTree(dir: extension.outputDirPath))
                 }
+
+                outputDir.mkdirs()
             }
 
             commandLine new DiagramGenerator(project, extension).buildCommand()
@@ -96,7 +98,7 @@ class GenerateDatabaseDiagramTask implements Task{
                 diagramFile.text = diagramText
                 diagramFile.setReadOnly()
 
-                if(extension.autoGitAdd) {
+                if (extension.autoGitAdd) {
                     git.add()
                 }
 

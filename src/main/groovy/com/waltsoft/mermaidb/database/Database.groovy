@@ -6,7 +6,7 @@ class Database {
 
     public static final String DOCKER_CONTAINER_NAME = 'mermaidb-temp-db'
 
-    private final Extension extension;
+    private final Extension extension
 
     Database(Extension extension) {
         this.extension = extension
@@ -23,7 +23,7 @@ class Database {
                 'docker', 'run', '--name', DOCKER_CONTAINER_NAME, '-d'
         ]
 
-        command.addAll(['-p', "54332:${dbType.defaultPort}"])
+        command.addAll(['-p', "${dbType.defaultPort}"])
 
         switch (dbType) {
             case DatabaseType.POSTGRESQL:

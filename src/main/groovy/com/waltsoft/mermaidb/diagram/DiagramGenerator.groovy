@@ -1,22 +1,22 @@
 package com.waltsoft.mermaidb.diagram
 
-import com.waltsoft.mermaidb.extension.Extension
 import com.waltsoft.mermaidb.database.Database
+import com.waltsoft.mermaidb.extension.Extension
 import org.gradle.api.Project
 
 class DiagramGenerator {
 
     private static final String VERSION = "v0.13.0"
 
-    private final Extension extension;
-    private final Project project;
+    private final Extension extension
+    private final Project project
 
     DiagramGenerator(Project project, Extension extension) {
         this.extension = extension
         this.project = project
     }
 
-    List<String> buildCommand(){
+    List<String> buildCommand() {
         def rootDir = project.layout.projectDirectory.asFile.absolutePath
 
         return ['docker', 'run', '--rm',
@@ -27,7 +27,7 @@ class DiagramGenerator {
     }
 
 
-    private String buildMermerdCommand(){
+    private String buildMermerdCommand() {
         return "apk add --no-cache git && " +
                 "go install github.com/KarnerTh/mermerd@${VERSION} && " +
                 "/go/bin/mermerd " +
@@ -38,7 +38,7 @@ class DiagramGenerator {
                 "--outputFileName /workspace/${extension.outputDirPath}/${extension.outputFileName}"
     }
 
-    private String buildDatabaseUrl(){
+    private String buildDatabaseUrl() {
         return String.format(
                 extension.dbType.mermerdUrlFormat,
                 extension.dbType.defaultUser,

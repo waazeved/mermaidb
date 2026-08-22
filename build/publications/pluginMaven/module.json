@@ -27,11 +27,11 @@
         {
           "name": "mermaidb-0.0.1.jar",
           "url": "mermaidb-0.0.1.jar",
-          "size": 45901,
-          "sha512": "f92d8e9171c3ba88f7f89d5e191e7dd116f042fcb468cc39d01036821369fad632fdc5a0589ea4f32de0e2df803c33ec75e8c76e3c8084a6b56f2cb23326b173",
-          "sha256": "4412e3c08a5197ed534c0907bf626b35cbaf16c478a75187472a4e445877d0b5",
-          "sha1": "ab651b1935be32296e90d68210e2723fb2ddfaf8",
-          "md5": "386c8548e2782add1a8741dae7a046e0"
+          "size": 69839,
+          "sha512": "4751c18ea02c771c1da56f3f2309412ec762bbe23b4f99474e4cb6cac2cbefdbbb55082f957ac33d574f1634d2ecc370693ac0a36eba1270a7d840abe3b34b8f",
+          "sha256": "9550a4759e15ce0ce65da45c14a895a2921fb66b11d9ba70c976ca8c719676ec",
+          "sha1": "a1b3f99c2d1b0f614d40d65cbdfa3553058c7b6f",
+          "md5": "4be0bc22b1f6b2efc0fda064aae408ad"
         }
       ]
     },
@@ -48,11 +48,11 @@
         {
           "name": "mermaidb-0.0.1.jar",
           "url": "mermaidb-0.0.1.jar",
-          "size": 45901,
-          "sha512": "f92d8e9171c3ba88f7f89d5e191e7dd116f042fcb468cc39d01036821369fad632fdc5a0589ea4f32de0e2df803c33ec75e8c76e3c8084a6b56f2cb23326b173",
-          "sha256": "4412e3c08a5197ed534c0907bf626b35cbaf16c478a75187472a4e445877d0b5",
-          "sha1": "ab651b1935be32296e90d68210e2723fb2ddfaf8",
-          "md5": "386c8548e2782add1a8741dae7a046e0"
+          "size": 69839,
+          "sha512": "4751c18ea02c771c1da56f3f2309412ec762bbe23b4f99474e4cb6cac2cbefdbbb55082f957ac33d574f1634d2ecc370693ac0a36eba1270a7d840abe3b34b8f",
+          "sha256": "9550a4759e15ce0ce65da45c14a895a2921fb66b11d9ba70c976ca8c719676ec",
+          "sha1": "a1b3f99c2d1b0f614d40d65cbdfa3553058c7b6f",
+          "md5": "4be0bc22b1f6b2efc0fda064aae408ad"
         }
       ]
     }
