@@ -43,38 +43,38 @@ enum DatabaseType {
             MYSQL_ROOT_USER, DEFAULT_PASSWORD, DEFAULT_DB_NAME
     );
 
-    public static final String DEFAULT_USER       = "usr"
-    public static final String DEFAULT_PASSWORD   = "pwd"
-    public static final String DEFAULT_DB_NAME    = "mydb"
-    public static final String SQLSERVER_USER     = "sa"
+    public static final String DEFAULT_USER = "usr"
+    public static final String DEFAULT_PASSWORD = "pwd"
+    public static final String DEFAULT_DB_NAME = "mydb"
+    public static final String SQLSERVER_USER = "sa"
     public static final String SQLSERVER_PASSWORD = "pwdStrong!123"
-    public static final String MYSQL_ROOT_USER    = "root"
-    public static final String EMPTY_STRING       = ""
+    public static final String MYSQL_ROOT_USER = "root"
+    public static final String EMPTY_STRING = ""
 
-    public static final int POSTGRESQL_PORT  = 5432
-    public static final int MYSQL_PORT       = 3306
-    public static final int SQLSERVER_PORT   = 1433
+    public static final int POSTGRESQL_PORT = 5432
+    public static final int MYSQL_PORT = 3306
+    public static final int SQLSERVER_PORT = 1433
     public static final int COCKROACHDB_PORT = 26257
-    public static final int TIDB_PORT        = 4000
-    public static final int SQLITE_PORT      = 0
+    public static final int TIDB_PORT = 4000
+    public static final int SQLITE_PORT = 0
 
-    public static final String POSTGRESQL_IMAGE  = "postgres:%s-alpine"
-    public static final String MYSQL_IMAGE       = "mysql:%s"
-    public static final String SQLSERVER_IMAGE   = "mcr.microsoft.com/mssql/server:%s-latest"
-    public static final String MARIADB_IMAGE     = "mariadb:%s"
+    public static final String POSTGRESQL_IMAGE = "postgres:%s-alpine"
+    public static final String MYSQL_IMAGE = "mysql:%s"
+    public static final String SQLSERVER_IMAGE = "mcr.microsoft.com/mssql/server:%s-latest"
+    public static final String MARIADB_IMAGE = "mariadb:%s"
     public static final String COCKROACHDB_IMAGE = "cockroachdb/cockroach:%s"
-    public static final String TIDB_IMAGE        = "pingcap/tidb:%s"
+    public static final String TIDB_IMAGE = "pingcap/tidb:%s"
 
     public static final String POSTGRESQL_JDBC_URL = 'jdbc:postgresql://localhost:%d/%s'
-    public static final String MYSQL_JDBC_URL      = 'jdbc:mysql://localhost:%d/%s'
-    public static final String SQLSERVER_JDBC_URL  = 'jdbc:sqlserver://localhost:%d;databaseName=%s'
-    public static final String SQLITE_JDBC_URL     = 'jdbc:sqlite:%2$s'
-    public static final String MARIADB_JDBC_URL    = 'jdbc:mariadb://localhost:%d/%s'
+    public static final String MYSQL_JDBC_URL = 'jdbc:mysql://localhost:%d/%s'
+    public static final String SQLSERVER_JDBC_URL = 'jdbc:sqlserver://localhost:%d;databaseName=%s'
+    public static final String SQLITE_JDBC_URL = 'jdbc:sqlite:%2$s'
+    public static final String MARIADB_JDBC_URL = 'jdbc:mariadb://localhost:%d/%s'
 
     public static final String POSTGRESQL_MERMERD_URL = 'postgresql://%s:%s@db:%d/%s'
-    public static final String MYSQL_MERMERD_URL      = 'mysql://%s:%s@db:%d/%s'
-    public static final String SQLSERVER_MERMERD_URL  = 'sqlserver://%s:%s@db:%d?database=%s'
-    public static final String SQLITE_MERMERD_URL     = 'sqlite://%4$s'
+    public static final String MYSQL_MERMERD_URL = 'mysql://%s:%s@db:%d/%s'
+    public static final String SQLSERVER_MERMERD_URL = 'sqlserver://%s:%s@db:%d?database=%s'
+    public static final String SQLITE_MERMERD_URL = 'sqlite://%4$s'
 
     final int defaultPort
     final String dockerImageFormat
@@ -94,5 +94,20 @@ enum DatabaseType {
         this.defaultUser = defaultUser
         this.defaultPassword = defaultPassword
         this.defaultDbName = defaultDbName
+    }
+
+    static DatabaseType fromString(String name) {
+        if (name == null || name.trim().isEmpty()) {
+            throw new IllegalArgumentException("Mermaidb: The database type name cannot be null or empty.")
+        }
+
+        DatabaseType match = values().find { it.name().equalsIgnoreCase(name.trim()) }
+
+        if (match == null) {
+            throw new IllegalArgumentException("Mermaidb: Unknown database type '${name}'. " +
+                    "Supported types are: ${values().collect { it.name() }.join(', ')}")
+        }
+
+        return match
     }
 }

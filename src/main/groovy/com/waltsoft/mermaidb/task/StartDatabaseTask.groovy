@@ -8,24 +8,30 @@ import org.gradle.api.tasks.Exec
 
 class StartDatabaseTask implements Task {
 
-    private static final String TASK_NAME = 'startDatabase'
+    public static final String TASK_NAME = 'startDatabase'
 
     private final Extension extension
     private final Project project
     private final Database database
-    private final CleanDatabaseTask cleanDatabaseTask
 
-    StartDatabaseTask(Project project, Extension extension, Database database, CleanDatabaseTask cleanDatabaseTask) {
+    StartDatabaseTask(Project project, Extension extension, Database database) {
         this.extension = extension
         this.project = project
         this.database = database
-        this.cleanDatabaseTask = cleanDatabaseTask
     }
 
     @Override
     void register() {
         project.tasks.register(TASK_NAME, Exec) {
-            dependsOn cleanDatabaseTask.name()
+            dependsOn CleanDatabaseTask.TASK_NAME
+
+            onlyIf {
+                if (extension.dbType == DatabaseType.SQLITE) {
+                    println "SQLite selected. Skipping Docker container setup."
+                    return false
+                }
+                return true
+            }
 
             commandLine database.buildRunCommand()
 
@@ -39,7 +45,7 @@ class StartDatabaseTask implements Task {
     }
 
     @Override
-    String name() {
+    String getName() {
         return TASK_NAME
     }
 }

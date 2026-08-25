@@ -10,16 +10,14 @@ import org.gradle.api.tasks.JavaExec
 class MigrationTask implements Task {
 
     private static final String MIGRATION_RUNTIME = "mermaidbMigrationRuntime"
-    private static final String TASK_NAME = 'runMigration'
+    public static final String TASK_NAME = 'runMigration'
 
     private final Extension extension
     private final Project project
-    private final StartDatabaseTask startDatabaseTask
 
-    MigrationTask(Project project, Extension extension, StartDatabaseTask startDatabaseTask) {
+    MigrationTask(Project project, Extension extension) {
         this.extension = extension
         this.project = project
-        this.startDatabaseTask = startDatabaseTask
     }
 
     @Override
@@ -30,14 +28,14 @@ class MigrationTask implements Task {
         migration.applyDependencies(project, migrationRuntime, extension)
 
         project.tasks.register(TASK_NAME, JavaExec) { task ->
-            task.dependsOn startDatabaseTask.name()
+            task.dependsOn StartDatabaseTask.TASK_NAME
             println "⚙️ Configuring migration task using: ${migration.getClass().getSimpleName()}"
             migration.configure(task, project, extension, migrationRuntime)
         }
     }
 
     @Override
-    String name() {
+    String getName() {
         return TASK_NAME
     }
 }

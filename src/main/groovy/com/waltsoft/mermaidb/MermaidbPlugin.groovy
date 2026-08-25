@@ -3,7 +3,9 @@ package com.waltsoft.mermaidb
 import com.waltsoft.mermaidb.database.Database
 import com.waltsoft.mermaidb.extension.Extension
 import com.waltsoft.mermaidb.extension.ExtensionValidator
+import com.waltsoft.mermaidb.git.Git
 import com.waltsoft.mermaidb.task.*
+import groovy.transform.Memoized
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
@@ -15,70 +17,69 @@ class MermaidbPlugin implements Plugin<Project> {
         def extension = project.extensions.create('mermaidb', Extension)
 
         project.afterEvaluate {
-
             new ExtensionValidator(extension).validate()
-
             println "🚀 Starting Mermaidb with database: ${extension.dbType}"
+            List tasks = buildTasks(project, extension)
+            registerTasks(project, extension, tasks)
+        }
+    }
 
-            /**
-             * // 1. Centralizamos o Provider aqui no topo da cadeia
-             def shouldRunProvider = project.provider {
-             boolean force = project.hasProperty(FORCE_GENERATE_PROPERTY) &&
-             project.property(FORCE_GENERATE_PROPERTY).toString().toBoolean()
-             return force || new Git(project, extension).checkIfMigrationsChanged()
-             }
+    private void registerTasks(Project project, Extension extension, List<Task> tasks) {
+        List<String> pluginTaskNames = []
 
-             // 2. Injetamos o Provider no construtor de cada task
-             def startDbTask = new StartDatabaseTask(project, extension, shouldRunProvider)
-             startDbTask.register()
+        for (def task : tasks) {
+            task.register()
+            pluginTaskNames.add(task.getName())
+        }
 
-             def migrationTask = new MigrationTask(project, extension, startDbTask, shouldRunProvider)
-             migrationTask.register()
-             */
-
-            /**
-             * class StartDatabaseTask implements Task {
-
-             private final Project project
-             private final Extension extension
-             private final Provider<Boolean> shouldRunProvider // Injetado!
-
-             StartDatabaseTask(Project project, Extension extension, Provider<Boolean> shouldRunProvider) {
-             this.project = project
-             this.extension = extension
-             this.shouldRunProvider = shouldRunProvider
-             }
-
-             @Override
-              void register() {
-              project.tasks.register('startDatabase', Exec) {
-
-              // A task consome a regra injetada de forma elegantíssima:
-              onlyIf { shouldRunProvider.get() }
-
-              // ... resto do seu código Docker ...
-              }
-              }}
-             */
-
-            def database = new Database(extension)
-            def stopDatabaseTask = new StopDatabaseTask(project, database)
-            def cleanDatabaseTask = new CleanDatabaseTask(project, database)
-            def startDatabaseTask = new StartDatabaseTask(project, extension, database, cleanDatabaseTask)
-            def migrationTask = new MigrationTask(project, extension, startDatabaseTask)
-            def generateDatabaseDiagramTask = new GenerateDatabaseDiagramTask(project, extension, migrationTask, stopDatabaseTask)
-
-            List<Task> tasks = [
-                    stopDatabaseTask,
-                    cleanDatabaseTask,
-                    startDatabaseTask,
-                    migrationTask,
-                    generateDatabaseDiagramTask
-            ]
-
-            for (def task : tasks) {
-                task.register()
+        pluginTaskNames.each { taskName ->
+            project.tasks.named(taskName).configure { t ->
+                t.onlyIf {
+                    return shouldRunPipeline(project, extension)
+                }
             }
         }
+    }
+
+    private List<Task> buildTasks(Project project, Extension extension) {
+        def database = new Database(extension)
+
+        def stopDatabaseTask = new StopDatabaseTask(project, database)
+        def cleanDatabaseTask = new CleanDatabaseTask(project, database)
+        def startDatabaseTask = new StartDatabaseTask(project, extension, database)
+        def migrationTask = new MigrationTask(project, extension)
+        def generateDatabaseDiagramTask = new GenerateDiagramTask(project, extension)
+
+        return [
+                stopDatabaseTask,
+                cleanDatabaseTask,
+                startDatabaseTask,
+                migrationTask,
+                generateDatabaseDiagramTask
+        ]
+    }
+
+    @Memoized
+    private boolean shouldRunPipeline(Project project, Extension extension) {
+
+        boolean forceGenerate = project.hasProperty("forceGenerate")
+                ? project.property("forceGenerate").toString().toBoolean() : false
+
+        if (forceGenerate) {
+            println "🔄 Force generate is ON. Starting Mermaid diagram generation..."
+            return true
+        }
+
+        def git = new Git(project, extension)
+        boolean changed = git.checkIfMigrationsChanged()
+
+        if (!changed) {
+            println "✅ No changes found in the migrations file. Skipping Mermaidb tasks to save time."
+            println "💡 (Tip: run with -PforceGenerate=true to force the generation)"
+        } else {
+            println "🔄 Migrations detected! Starting Mermaid diagram generation..."
+        }
+
+        return changed
     }
 }

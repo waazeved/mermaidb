@@ -16,8 +16,12 @@ class ExtensionValidator {
             throw new GradleException("Error (Mermaidb): The 'dbType' field is required.")
         }
 
-        if (extension.dbType != DatabaseType.SQLITE && (extension.dbVersion == null || extension.dbVersion.trim().isEmpty())) {
-            throw new GradleException("Error (Mermaidb): The 'dbVersion' field is required for non-SQLite databases.")
+        boolean isNotSqlite = extension.dbType != DatabaseType.SQLITE
+        boolean hasNoCustomImage = extension.dbCustomDockerImage == null || extension.dbCustomDockerImage.trim().isEmpty()
+        boolean hasNoDbVersion = extension.dbVersion == null || extension.dbVersion.trim().isEmpty()
+
+        if (isNotSqlite && hasNoCustomImage && hasNoDbVersion) {
+            throw new GradleException("Error (Mermaidb): The 'dbVersion' field is required when not using a custom Docker image.")
         }
 
         if (extension.changeLogFilePath == null || extension.changeLogFilePath.trim().isEmpty()) {
@@ -26,14 +30,6 @@ class ExtensionValidator {
 
         if (extension.outputDirPath == null || extension.outputDirPath.trim().isEmpty()) {
             throw new GradleException("Error (Mermaidb): The 'outputDirPath' field is required.")
-        }
-
-        if (extension.outputFileName == null || extension.outputFileName.trim().isEmpty()) {
-            throw new GradleException("Error (Mermaidb): The 'outputFileName' field cannot be empty.")
-        }
-
-        if (extension.outputFileName != null && !extension.outputFileName.endsWith(".mmd")) {
-            throw new GradleException("Error (Mermaidb): The 'outputFileName' (${extension.outputFileName}) does not end with '.mmd'. It is necessary to use the .mmd extension for Mermaid files.")
         }
     }
 }

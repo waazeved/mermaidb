@@ -1,7 +1,6 @@
 package com.waltsoft.mermaidb.git
 
 import com.waltsoft.mermaidb.extension.Extension
-import groovy.transform.Memoized
 import org.gradle.api.Project
 
 class Git {
@@ -16,19 +15,27 @@ class Git {
 
     void add() {
         try {
-            "git add ${extension.outputDirPath}".execute()
+            Process process = "git add ${extension.outputDirPath}".execute(null, project.rootDir)
+            process.waitFor()
+            println "✅ Diagram files added to git successfully."
         } catch (Exception e) {
             println "⚠️ Git repo not found. Skipping 'git add' for the database diagram files."
         }
     }
 
-    @Memoized
     boolean checkIfMigrationsChanged() {
-        File migrationFile = project.file("src/main/resources/" + extension.changeLogFilePath)
-        String migrationDirPath = migrationFile.getParentFile().getAbsolutePath()
+        String changelogFilePath = "src/main/resources/" + extension.changeLogFilePath.replace("\\", "/")
+
+        String migrationDir = changelogFilePath
+        int lastSlash = changelogFilePath.lastIndexOf('/')
+
+        if (lastSlash > 0) {
+            migrationDir = changelogFilePath.substring(0, lastSlash)
+        }
 
         try {
             Process process = "git diff --name-only --cached".execute(null, project.rootDir)
+            String output = process.text
             process.waitFor()
 
             if (process.exitValue() != 0) {
@@ -36,30 +43,31 @@ class Git {
                 return true
             }
 
-            String output = process.in.text
             if (output.trim().isEmpty()) {
                 return false
             }
 
-            String[] stagedFiles = output.split('\n')
+            boolean hasMigrations = output.split('\n').any { relativePath ->
 
-            for (String relativePath : stagedFiles) {
-                if (relativePath.trim().isEmpty()) continue
+                String cleanedPath = relativePath.trim().replace("\\", "/")
 
-                File stagedFile = project.file(relativePath.trim())
-
-                if (stagedFile.getAbsolutePath().startsWith(migrationDirPath)) {
-                    println "✅ Staged migration file detected: ${relativePath}"
-                    return true
+                if (cleanedPath.isEmpty()) {
+                    return false
                 }
+
+                boolean isMatch = cleanedPath.contains(migrationDir)
+                if (isMatch) {
+                    println "✅ Staged migration file detected: ${cleanedPath}"
+                }
+
+                return isMatch
             }
+
+            return hasMigrations
 
         } catch (Exception e) {
             println "⚠️ Error checking git staged files: ${e.message}. Assuming migrations changed."
             return true
         }
-
-        return false
     }
-
 }

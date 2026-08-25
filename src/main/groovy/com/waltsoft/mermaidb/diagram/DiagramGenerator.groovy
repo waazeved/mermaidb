@@ -16,26 +16,25 @@ class DiagramGenerator {
         this.project = project
     }
 
-    List<String> buildCommand() {
-        def rootDir = project.layout.projectDirectory.asFile.absolutePath
+    List<String> buildCommand(String diagramFilePath) {
+        def rootDir = project.layout.projectDirectory.asFile.absolutePath.replace("\\", "/")
 
         return ['docker', 'run', '--rm',
                 '--link', "${Database.DOCKER_CONTAINER_NAME}:db",
                 '-v', "${rootDir}:/workspace",
                 'golang:alpine',
-                'sh', '-c', buildMermerdCommand()]
+                'sh', '-c', buildMermerdCommand(diagramFilePath)]
     }
 
-
-    private String buildMermerdCommand() {
-        return "apk add --no-cache git && " +
+    private String buildMermerdCommand(String diagramFilePath) {
+        return "echo '⏳ Compiling Mermerd (This may take a few minutes)...' && " +
+                "apk add --no-cache git && " +
                 "go install github.com/KarnerTh/mermerd@${VERSION} && " +
                 "/go/bin/mermerd " +
                 "-c \"${buildDatabaseUrl()}\" " +
                 "--schema public " +
                 "--useAllTables " +
-                "--omitConstraintLabels " +
-                "--outputFileName /workspace/${extension.outputDirPath}/${extension.outputFileName}"
+                "--outputFileName /workspace/${diagramFilePath}"
     }
 
     private String buildDatabaseUrl() {

@@ -16,7 +16,7 @@ class Database {
         def dbType = extension.dbType
 
         if (dbType == DatabaseType.SQLITE) {
-            return ['echo', 'SQLite selected. Skipping Docker container.']
+            return []
         }
 
         List<String> command = [
