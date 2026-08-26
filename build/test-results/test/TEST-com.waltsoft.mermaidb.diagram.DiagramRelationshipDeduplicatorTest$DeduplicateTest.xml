@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="Tests for deduplicate method" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-08-26T04:16:46.174Z" hostname="slave" time="1.024">
+  <properties/>
+  <testcase name="[1] Input: '&quot;A }o--|| B : \&quot;id\&quot;\nA }o--|| B : \&quot;id\&quot;&quot;' =&gt; Expected: '&quot;A }o--|| B : \&quot;id\&quot;&quot;'" classname="com.waltsoft.mermaidb.diagram.DiagramRelationshipDeduplicatorTest$DeduplicateTest" time="0.995"/>
+  <testcase name="[2] Input: '&quot;table {\n  int id\n}\ntable }o--|| other : \&quot;fk\&quot;\ntable }o--|| other : \&quot;fk\&quot;&quot;' =&gt; Expected: '&quot;table {\n  int id\n}\ntable }o--|| other : \&quot;fk\&quot;&quot;'" classname="com.waltsoft.mermaidb.diagram.DiagramRelationshipDeduplicatorTest$DeduplicateTest" time="0.004"/>
+  <testcase name="[3] Input: '&quot;A }o--|| B : \&quot;id\&quot;\nA }o--|| C : \&quot;id\&quot;&quot;' =&gt; Expected: '&quot;A }o--|| B : \&quot;id\&quot;\nA }o--|| C : \&quot;id\&quot;&quot;'" classname="com.waltsoft.mermaidb.diagram.DiagramRelationshipDeduplicatorTest$DeduplicateTest" time="0.003"/>
+  <testcase name="[4] Input: '&quot;table {\n  int id\n}&quot;' =&gt; Expected: '&quot;table {\n  int id\n}&quot;'" classname="com.waltsoft.mermaidb.diagram.DiagramRelationshipDeduplicatorTest$DeduplicateTest" time="0.004"/>
+  <testcase name="[5] Input: '&quot;&quot;' =&gt; Expected: '&quot;&quot;'" classname="com.waltsoft.mermaidb.diagram.DiagramRelationshipDeduplicatorTest$DeduplicateTest" time="0.003"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
