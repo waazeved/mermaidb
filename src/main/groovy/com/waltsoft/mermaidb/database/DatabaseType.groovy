@@ -5,42 +5,50 @@ enum DatabaseType {
     POSTGRESQL(
             POSTGRESQL_PORT, POSTGRESQL_IMAGE,
             POSTGRESQL_JDBC_URL, POSTGRESQL_MERMERD_URL,
-            DEFAULT_USER, DEFAULT_PASSWORD, DEFAULT_DB_NAME
+            DEFAULT_USER, DEFAULT_PASSWORD, DEFAULT_DB_NAME,
+            POSTGRESQL_DRIVER_DEPENDENCY
     ),
     ALLOYDB(
             POSTGRESQL_PORT, POSTGRESQL_IMAGE,
             POSTGRESQL_JDBC_URL, POSTGRESQL_MERMERD_URL,
-            DEFAULT_USER, DEFAULT_PASSWORD, DEFAULT_DB_NAME
+            DEFAULT_USER, DEFAULT_PASSWORD, DEFAULT_DB_NAME,
+            POSTGRESQL_DRIVER_DEPENDENCY
     ),
     MYSQL(
             MYSQL_PORT, MYSQL_IMAGE,
             MYSQL_JDBC_URL, MYSQL_MERMERD_URL,
-            MYSQL_ROOT_USER, DEFAULT_PASSWORD, DEFAULT_DB_NAME
+            MYSQL_ROOT_USER, DEFAULT_PASSWORD, DEFAULT_DB_NAME,
+            MYSQL_DRIVER_DEPENDENCY
     ),
     SQLSERVER(
             SQLSERVER_PORT, SQLSERVER_IMAGE,
             SQLSERVER_JDBC_URL, SQLSERVER_MERMERD_URL,
-            SQLSERVER_USER, SQLSERVER_PASSWORD, DEFAULT_DB_NAME
+            SQLSERVER_USER, SQLSERVER_PASSWORD, DEFAULT_DB_NAME,
+            SQLSERVER_DRIVER_DEPENDENCY
     ),
     SQLITE(
             SQLITE_PORT, EMPTY_STRING,
             SQLITE_JDBC_URL, SQLITE_MERMERD_URL,
-            EMPTY_STRING, EMPTY_STRING, DEFAULT_DB_NAME
+            EMPTY_STRING, EMPTY_STRING, DEFAULT_DB_NAME,
+            SQLITE_DRIVER_DEPENDENCY
     ),
     MARIADB(
             MYSQL_PORT, MARIADB_IMAGE,
             MARIADB_JDBC_URL, MYSQL_MERMERD_URL,
-            MYSQL_ROOT_USER, DEFAULT_PASSWORD, DEFAULT_DB_NAME
+            MYSQL_ROOT_USER, DEFAULT_PASSWORD, DEFAULT_DB_NAME,
+            MYSQL_DRIVER_DEPENDENCY
     ),
     COCKROACHDB(
             COCKROACHDB_PORT, COCKROACHDB_IMAGE,
             POSTGRESQL_JDBC_URL, POSTGRESQL_MERMERD_URL,
-            DEFAULT_USER, DEFAULT_PASSWORD, DEFAULT_DB_NAME
+            DEFAULT_USER, DEFAULT_PASSWORD, DEFAULT_DB_NAME,
+            POSTGRESQL_DRIVER_DEPENDENCY
     ),
     TIDB(
             TIDB_PORT, TIDB_IMAGE,
             MYSQL_JDBC_URL, MYSQL_MERMERD_URL,
-            MYSQL_ROOT_USER, DEFAULT_PASSWORD, DEFAULT_DB_NAME
+            MYSQL_ROOT_USER, DEFAULT_PASSWORD, DEFAULT_DB_NAME,
+            MYSQL_DRIVER_DEPENDENCY
     );
 
     public static final String DEFAULT_USER = "usr"
@@ -76,6 +84,11 @@ enum DatabaseType {
     public static final String SQLSERVER_MERMERD_URL = 'sqlserver://%s:%s@db:%d?database=%s'
     public static final String SQLITE_MERMERD_URL = 'sqlite://%4$s'
 
+    public static final String POSTGRESQL_DRIVER_DEPENDENCY = "org.postgresql:postgresql:42.7.5"
+    public static final String MYSQL_DRIVER_DEPENDENCY      = "com.mysql:mysql-connector-j:8.3.0"
+    public static final String SQLSERVER_DRIVER_DEPENDENCY  = "com.microsoft.sqlserver:mssql-jdbc:12.6.1.jre11"
+    public static final String SQLITE_DRIVER_DEPENDENCY     = "org.xerial:sqlite-jdbc:3.45.2.0"
+
     final int defaultPort
     final String dockerImageFormat
     final String jdbcUrlFormat
@@ -83,10 +96,12 @@ enum DatabaseType {
     final String defaultUser
     final String defaultPassword
     final String defaultDbName
+    final String jdbcDriverDependency // Novo campo
 
     DatabaseType(int defaultPort, String dockerImageFormat,
                  String jdbcUrlFormat, String mermerdUrlFormat,
-                 String defaultUser, String defaultPassword, String defaultDbName) {
+                 String defaultUser, String defaultPassword, String defaultDbName,
+                 String jdbcDriverDependency) {
         this.defaultPort = defaultPort
         this.dockerImageFormat = dockerImageFormat
         this.jdbcUrlFormat = jdbcUrlFormat
@@ -94,6 +109,7 @@ enum DatabaseType {
         this.defaultUser = defaultUser
         this.defaultPassword = defaultPassword
         this.defaultDbName = defaultDbName
+        this.jdbcDriverDependency = jdbcDriverDependency
     }
 
     static DatabaseType fromString(String name) {

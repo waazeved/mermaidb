@@ -82,4 +82,10 @@ class MermaidbPlugin implements Plugin<Project> {
 
         return changed
     }
+
+    /**
+     * TODO Colocar no readme que isso pode ser incluido no githook
+     * TODO Criar testes unitarios
+     * TODO Publicar versão 1.0.0
+     */
 }
