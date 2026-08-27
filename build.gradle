@@ -8,6 +8,8 @@ plugins {
     id "name.remal.sonarlint" version "7.0.1"
 }
 
+check.dependsOn sonarlintMain
+
 group = 'com.waltsoft'
 version = '0.0.1'
 
@@ -68,6 +70,7 @@ tasks.named('check') {
 gitHooks {
     hooks = ['pre-commit': 'check']
 }
+
 
 tasks.withType(ProcessResources).configureEach {
     duplicatesStrategy = DuplicatesStrategy.INCLUDE

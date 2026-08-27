@@ -140,3 +140,51 @@ manageable **Module Diagrams**.
 
 This feature is perfect for large, complex schemas, as it provides both a high-level overview and detailed,
 domain-specific views of your database architecture.
+
+## Tests
+
+To execute all test, you can run with:
+
+```bash
+gradle test
+```
+
+To execute all tests in some test class, run:
+
+```bash
+gradle test --tests SomeTestClass
+```
+
+To execute a single specified test in some test class, run:
+
+```bash
+gradle test --tests SomeTestClass.someSpecificMethod
+```
+
+To execute tests with debug logs, include `DEBUG=true` before command:
+
+```bash
+DEBUG=true gradle test
+```
+
+## Java Style
+
+To check if the project code are following Java Style, use command below:
+
+```bash
+./gradlew spotlessCheck
+```
+
+To apply Java Style to the project code, use command below:
+
+```bash
+./gradlew spotlessApply
+```
+
+## Check
+
+To run all tests, verify code quality and java code style, use command below:
+
+```bash
+gradle check
+```
