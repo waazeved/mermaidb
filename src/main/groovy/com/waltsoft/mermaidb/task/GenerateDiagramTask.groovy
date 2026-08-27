@@ -1,10 +1,6 @@
 package com.waltsoft.mermaidb.task
 
-import com.waltsoft.mermaidb.diagram.DiagramColumnModifier
-import com.waltsoft.mermaidb.diagram.DiagramGenerator
-import com.waltsoft.mermaidb.diagram.DiagramModuleGrouper
-import com.waltsoft.mermaidb.diagram.DiagramRelationshipDeduplicator
-import com.waltsoft.mermaidb.diagram.DiagramTableOrderer
+import com.waltsoft.mermaidb.diagram.*
 import com.waltsoft.mermaidb.extension.Extension
 import com.waltsoft.mermaidb.git.Git
 import org.gradle.api.GradleException
@@ -76,13 +72,13 @@ class GenerateDiagramTask implements Task {
 
         def diagramText = diagramFile.text
 
-        diagramText = new DiagramRelationshipDeduplicator(diagramText).deduplicate();
+        diagramText = new DiagramRelationshipDeduplicator(diagramText).deduplicate()
 
         if (extension.uppercaseColumns) {
             diagramText = new DiagramColumnModifier(diagramText).toUppercase()
         }
 
-        Optional<Map<String, String>> diagramsOptional = new DiagramModuleGrouper(diagramText).makeDiagramsMappedByModuleName()
+        Optional<Map<String, String>> diagramsOptional = new DiagramGrouper(diagramText).groupByModule()
 
         if (diagramsOptional.isEmpty()) {
 

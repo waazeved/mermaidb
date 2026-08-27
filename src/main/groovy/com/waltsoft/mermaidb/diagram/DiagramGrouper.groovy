@@ -1,8 +1,6 @@
 package com.waltsoft.mermaidb.diagram
 
-import java.util.regex.Pattern
-
-class DiagramModuleGrouper {
+class DiagramGrouper {
 
     private static final String SHARED_KERNEL = "SHARED_KERNEL"
     private static final String MAIN_GROUP = "MAIN"
@@ -25,11 +23,11 @@ class DiagramModuleGrouper {
     private Map<String, String> tableBodies = [:]
     private List<String> relationships = []
 
-    DiagramModuleGrouper(String diagram) {
+    DiagramGrouper(String diagram) {
         this.rawDiagram = diagram
     }
 
-    Optional<Map<String, String>> makeDiagramsMappedByModuleName() {
+    Optional<Map<String, String>> groupByModule() {
         parseMermaid()
 
         List<String> allTableNames = new ArrayList<>(tableBodies.keySet())
@@ -71,7 +69,7 @@ class DiagramModuleGrouper {
                 return
             }
 
-            if (trimmed.contains("{")) {
+            if (trimmed.contains("{") && !trimmed.contains(RELATION_DASH) && !trimmed.contains(RELATION_DOT)) {
                 insideTable = true
                 currentTableName = trimmed.substring(0, trimmed.indexOf("{")).replace("\"", "").trim()
                 currentBlock = new StringBuilder(line).append("\n")
