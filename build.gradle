@@ -1,10 +1,14 @@
 plugins {
     id 'groovy'
     id 'java-gradle-plugin'
-    id 'maven-publish' // Útil se quiser publicar localmente ou no JitPack/Maven Central
+    id 'maven-publish'
+    id "com.github.jakemarsden.git-hooks" version "0.0.2"
+    id "jacoco"
+    id 'org.barfuin.gradle.jacocolog' version '3.1.0'
+    id "name.remal.sonarlint" version "7.0.1"
 }
 
-group = 'com.waltsoft' // Substitua pelo seu grupo/namespace
+group = 'com.waltsoft'
 version = '0.0.1'
 
 repositories {
@@ -26,6 +30,43 @@ test {
         events "passed", "skipped", "failed"
         showStandardStreams = (System.getenv('DEBUG') != null)
     }
+
+    finalizedBy jacocoTestReport
+}
+
+jacocoTestCoverageVerification {
+
+    violationRules {
+        rule {
+            element = 'BUNDLE'
+            limit {
+                counter = 'CLASS'
+                minimum = 0.50
+            }
+        }
+
+        rule {
+            element = 'BUNDLE'
+            limit {
+                counter = 'LINE'
+                minimum = 0.40
+            }
+        }
+
+    }
+}
+
+sonarLint {
+    ignoreFailures = false
+}
+
+tasks.named('check') {
+    dependsOn 'sonarlintMain'
+    dependsOn 'jacocoTestCoverageVerification'
+}
+
+gitHooks {
+    hooks = ['pre-commit': 'check']
 }
 
 tasks.withType(ProcessResources).configureEach {
@@ -35,8 +76,8 @@ tasks.withType(ProcessResources).configureEach {
 gradlePlugin {
     plugins {
         mermaidbPlugin {
-            id = 'com.waltsoft.mermaidb' // O ID que os usuários usarão no bloco `plugins`
-            implementationClass = 'com.waltsoft.mermaidb.MermaidbPlugin' // A classe principal do seu plugin
+            id = 'com.waltsoft.mermaidb'
+            implementationClass = 'com.waltsoft.mermaidb.MermaidbPlugin'
         }
     }
 }
