@@ -14,13 +14,14 @@ class DiagramGrouper {
     private static final String RELATION_DASH = "--"
     private static final String RELATION_DOT = ".."
 
-    private static final String REGEX_SEPARATORS = "[_\\-.]"
+    private static final String REGEX_TABLE_SEPARATORS = "[_\\-.]"
     private static final String REGEX_RAW_RELATION = "^\\s*\"?([a-zA-Z0-9_.-]+)\"?\\s+\\S+\\s+\"?([a-zA-Z0-9_.-]+)\"?"
     private static final String REGEX_MODULE = "\"MODULE: ([A-Z0-9_]+)\""
     private static final String REGEX_FULL_RELATION = "^(\\s*)\"?([a-zA-Z0-9_.-]+)\"?(\\s+\\S+\\s+)\"?([a-zA-Z0-9_.-]+)\"?(\\s*:.*)\$"
+    private static final int MIN_TABLES_TO_FORM_GROUP = 4
+    private static final String TABLE_SEPARATOR = "_"
 
     private final String rawDiagram
-    private Map<String, String> tableBodies = [:]
     private List<String> relationships = []
 
     DiagramGrouper(String diagram) {
@@ -28,28 +29,33 @@ class DiagramGrouper {
     }
 
     Optional<Map<String, String>> groupByModule() {
-        parseMermaid()
+        Map<String, String> tableBodies = parseTableBodies(rawDiagram)
 
         List<String> allTableNames = new ArrayList<>(tableBodies.keySet())
-        if (allTableNames.isEmpty()) {
+        if (allTableNames.isEmpty() || allTableNames.size() <= MIN_TABLES_TO_FORM_GROUP) {
             return Optional.empty()
         }
 
-        List<String> validGroups = calculateValidGroups(allTableNames)
-        if (validGroups.isEmpty()) {
+        List<String> groups = extractGroups(allTableNames)
+        if (groups.isEmpty()) {
             return Optional.empty()
         }
 
-        Map<String, List<String>> categorizedTables = assignTablesToGroups(allTableNames, validGroups)
+        Map<String, List<String>> categorizedTables = assignTablesToGroups(allTableNames, groups)
+
+        if(categorizedTables.size() == 1 && categorizedTables.containsKey(SHARED_KERNEL)){
+            return Optional.empty()
+        }
+
         Map<String, String> abstractModulesText = buildAbstractModules(categorizedTables)
         Map<String, String> finalDiagrams = [:]
 
-        String mainDiagram = buildMainDiagram(categorizedTables, abstractModulesText)
+        String mainDiagram = buildMainDiagram(categorizedTables, abstractModulesText, tableBodies)
         finalDiagrams.put(MAIN_DIAGRAM_KEY, mainDiagram)
 
         categorizedTables.keySet().each { groupName ->
             if (groupName != SHARED_KERNEL) {
-                String subDiagram = buildSubDiagram(groupName, categorizedTables, abstractModulesText)
+                String subDiagram = buildSubDiagram(groupName, categorizedTables, abstractModulesText, tableBodies)
                 finalDiagrams.put(groupName, subDiagram)
             }
         }
@@ -57,10 +63,11 @@ class DiagramGrouper {
         return Optional.of(finalDiagrams)
     }
 
-    private void parseMermaid() {
+    private Map<String, String> parseTableBodies(String rawDiagram) {
         boolean insideTable = false
         String currentTableName = ""
         StringBuilder currentBlock = new StringBuilder()
+        Map<String, String> tableBodies = [:]
 
         rawDiagram.eachLine { line ->
             String trimmed = line.trim()
@@ -83,22 +90,24 @@ class DiagramGrouper {
                 relationships.add(line)
             }
         }
+
+        return tableBodies
     }
 
-    private List<String> calculateValidGroups(List<String> tables) {
+    private List<String> extractGroups(List<String> tables) {
         Map<String, Integer> prefixCounts = [:]
 
         tables.each { tableName ->
-            String[] parts = tableName.split(REGEX_SEPARATORS)
+            String[] parts = tableName.split(REGEX_TABLE_SEPARATORS)
             String currentPrefix = ""
 
             parts.eachWithIndex { part, index ->
-                currentPrefix += (index == 0 ? part : "_" + part)
+                currentPrefix += (index == 0 ? part : TABLE_SEPARATOR + part)
                 prefixCounts[currentPrefix] = prefixCounts.getOrDefault(currentPrefix, 0) + 1
             }
         }
 
-        Map<String, Integer> potentialGroups = prefixCounts.findAll { it.value >= 4 }
+        Map<String, Integer> potentialGroups = prefixCounts.findAll { it.value >= MIN_TABLES_TO_FORM_GROUP }
 
         if (potentialGroups.isEmpty()) {
             return []
@@ -107,20 +116,24 @@ class DiagramGrouper {
         double average = potentialGroups.values().sum() / (double) potentialGroups.size()
         double threshold = average * 0.5
 
-        List<String> validGroups = potentialGroups.findAll { entry ->
+        return  potentialGroups.findAll { entry ->
             entry.value >= threshold
         }.collect { it.key }
-
-        return validGroups.sort { -it.length() }
     }
 
-    private Map<String, List<String>> assignTablesToGroups(List<String> tables, List<String> validGroups) {
+    private Map<String, List<String>> assignTablesToGroups(List<String> tables, List<String> groups) {
         Map<String, List<String>> categorized = [:]
         categorized[SHARED_KERNEL] = []
 
+        List<String> prioritizedGroups = groups.sort { -it.length() }
+
         tables.each { tableName ->
-            String matchedGroup = validGroups.find { group ->
-                tableName == group || tableName.startsWith(group + "_") || tableName.startsWith(group + "-")
+
+            String normalizedTableName = tableName.replaceAll(REGEX_TABLE_SEPARATORS, TABLE_SEPARATOR)
+
+            String matchedGroup = prioritizedGroups.find { group ->
+                        normalizedTableName == group
+                        || normalizedTableName.startsWith(group + TABLE_SEPARATOR)
             }
 
             if (matchedGroup) {
@@ -134,7 +147,7 @@ class DiagramGrouper {
         List<String> groupsToDissolve = []
 
         categorized.each { groupName, groupTables ->
-            if (groupName != SHARED_KERNEL && groupTables.size() <= 1) {
+            if (groupName != SHARED_KERNEL && groupTables.size() < MIN_TABLES_TO_FORM_GROUP) {
                 categorized[SHARED_KERNEL].addAll(groupTables)
                 groupsToDissolve.add(groupName)
             }
@@ -179,7 +192,9 @@ class DiagramGrouper {
         return map
     }
 
-    private String buildMainDiagram(Map<String, List<String>> categorizedTables, Map<String, String> abstractModules) {
+    private String buildMainDiagram(Map<String, List<String>> categorizedTables,
+                                    Map<String, String> abstractModules,
+                                    Map<String, String> tableBodies) {
         StringBuilder builder = new StringBuilder(ER_DIAGRAM_HEADER)
         Map<String, String> tableToGroup = createTableToGroupMap(categorizedTables)
 
@@ -201,7 +216,10 @@ class DiagramGrouper {
         return builder.toString()
     }
 
-    private String buildSubDiagram(String currentGroup, Map<String, List<String>> categorizedTables, Map<String, String> abstractModules) {
+    private String buildSubDiagram(String currentGroup,
+                                   Map<String, List<String>> categorizedTables,
+                                   Map<String, String> abstractModules,
+                                   Map<String, String> tableBodies) {
         StringBuilder builder = new StringBuilder(ER_DIAGRAM_HEADER)
         Map<String, String> tableToGroup = createTableToGroupMap(categorizedTables)
 

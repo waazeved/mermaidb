@@ -34,6 +34,17 @@ To use the Mermaidb plugin, your development environment must have the following
 
 ---
 
+## ✅ Compatibility
+
+The plugin is designed to be compatible with a wide range of modern development environments.
+
+| **Software** | **Supported Versions** |
+|--------------|------------------------|
+| **Gradle**   | `7.6` or newer         |
+| **Java**     | `11` or newer          |
+
+---
+
 ## 🛠️ For Developers: How to Test Locally
 
 If you want to contribute to Mermaidb, you can easily test your changes locally.
@@ -146,39 +157,25 @@ domain-specific views of your database architecture.
 To execute all test, you can run with:
 
 ```bash
-gradle test
+./gradlew test
 ```
 
 To execute all tests in some test class, run:
 
 ```bash
-gradle test --tests SomeTestClass
+./gradlew test --tests SomeTestClass
 ```
 
 To execute a single specified test in some test class, run:
 
 ```bash
-gradle test --tests SomeTestClass.someSpecificMethod
+./gradlew test --tests SomeTestClass.someSpecificMethod
 ```
 
 To execute tests with debug logs, include `DEBUG=true` before command:
 
 ```bash
-DEBUG=true gradle test
-```
-
-## Java Style
-
-To check if the project code are following Java Style, use command below:
-
-```bash
-./gradlew spotlessCheck
-```
-
-To apply Java Style to the project code, use command below:
-
-```bash
-./gradlew spotlessApply
+DEBUG=true ./gradlew test
 ```
 
 ## Check
@@ -186,5 +183,5 @@ To apply Java Style to the project code, use command below:
 To run all tests, verify code quality and java code style, use command below:
 
 ```bash
-gradle check
+./gradlew check
 ```

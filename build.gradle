@@ -13,6 +13,12 @@ check.dependsOn sonarlintMain
 group = 'com.waltsoft'
 version = '0.0.1'
 
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(11)
+    }
+}
+
 repositories {
     mavenCentral()
 }
@@ -21,8 +27,8 @@ dependencies {
     implementation gradleApi()
     implementation localGroovy()
 
-    testImplementation 'org.junit.jupiter:junit-jupiter:6.1.3'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.10.2'
 }
 
 test {
