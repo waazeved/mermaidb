@@ -6,6 +6,8 @@ import com.waltsoft.mermaidb.extension.Extension
 import org.gradle.api.Project
 import org.gradle.api.tasks.Exec
 
+import java.sql.SQLException
+
 class StartDatabaseTask implements Task {
 
     public static final String TASK_NAME = 'startDatabase'
@@ -22,26 +24,26 @@ class StartDatabaseTask implements Task {
 
     @Override
     void register() {
-        project.tasks.register(TASK_NAME, Exec) {
-            dependsOn CleanDatabaseTask.TASK_NAME
-
-            onlyIf {
-                if (extension.dbType == DatabaseType.SQLITE) {
-                    println "SQLite selected. Skipping Docker container setup."
-                    return false
-                }
-                return true
-            }
-
-            commandLine database.buildRunCommand()
-
-            doLast {
-                if (extension.dbType != DatabaseType.SQLITE) {
-                    println "Waiting for ${extension.dbType} database to start..."
-                    sleep(6000)
-                }
-            }
+        project.tasks.register(TASK_NAME, Exec) { task ->
+            task.dependsOn CleanDatabaseTask.TASK_NAME
+            task.onlyIf { shouldRun() }
+            task.commandLine database.buildRunCommand()
+            task.doLast { onComplete() }
         }
+    }
+
+    boolean shouldRun() {
+        if (extension.dbType == DatabaseType.SQLITE) {
+            println "SQLite selected. Skipping Docker container setup."
+            return false
+        }
+        return true
+    }
+
+    void onComplete() {
+        println "Waiting for ${extension.dbType} database to start..."
+        sleep(6000)
+        println "Database container should be ready."
     }
 
     @Override

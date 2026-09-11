@@ -1,6 +1,11 @@
 package com.waltsoft.mermaidb.database
 
+import com.waltsoft.mermaidb.docker.Docker
 import com.waltsoft.mermaidb.extension.Extension
+
+import java.sql.Connection
+import java.sql.DriverManager
+import java.sql.SQLException
 
 class Database {
 
@@ -58,5 +63,50 @@ class Database {
 
     List<String> buildRemoveCommand() {
         return ['docker', 'rm', '-f', Database.DOCKER_CONTAINER_NAME]
+    }
+
+    void waitForConnection() throws SQLException {
+        def dbType = extension.dbType
+
+        if (dbType == DatabaseType.SQLITE) {
+            return
+        }
+
+        int maxRetries = 10
+        long retryDelay = 2000
+        Exception lastException = null
+
+        def databaseExternalPort = new Docker().getDynamicPort(
+                DOCKER_CONTAINER_NAME, dbType.defaultPort as String)
+
+        def url = String.format(
+                dbType.jdbcUrlFormat,
+                databaseExternalPort,
+                dbType.defaultDbName)
+
+        println "Attempting to connect to ${url}..."
+
+        for (int attempt = 1; attempt <= maxRetries; attempt++) {
+            try (Connection connection = DriverManager.getConnection(url, dbType.defaultUser, dbType.defaultPassword)) {
+                println "Connection to ${dbType} successful on attempt #${attempt}."
+                return
+            } catch (Exception e) {
+                lastException = e
+                if (attempt < maxRetries) {
+                    println "Connection attempt #${attempt} failed. Error: ${e.message}"
+                    println "Retrying in ${retryDelay / 1000} seconds..."
+                    Thread.sleep(retryDelay)
+                }
+            }
+        }
+
+        def logsProcess = "docker logs ${DOCKER_CONTAINER_NAME}".execute()
+        logsProcess.waitFor()
+        def containerLogs = logsProcess.in.text
+        def failureMsg = "Failed to connect to the database: ${dbType} after ${maxRetries} attempts.\n" +
+                "Container logs:\n${containerLogs}"
+        println failureMsg
+
+        throw new SQLException(failureMsg, lastException)
     }
 }

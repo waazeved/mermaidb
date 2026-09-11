@@ -13,14 +13,24 @@ class DatabaseTest {
 
     private Extension extensionMock
 
+    private static final Map<DatabaseType, String> DB_VERSIONS = [
+            (DatabaseType.POSTGRESQL): "16",
+            (DatabaseType.ALLOYDB): "15",
+            (DatabaseType.MYSQL): "8.0",
+            (DatabaseType.SQLSERVER): "2022-latest",
+            (DatabaseType.MARIADB): "10.11",
+            (DatabaseType.COCKROACHDB): "v23.1.0",
+            (DatabaseType.TIDB): "v7.5.0"
+    ]
+
     @BeforeEach
     void setUp() {
         extensionMock = Mockito.mock(Extension.class)
-        Mockito.when(extensionMock.getDbVersion()).thenReturn("latest")
     }
 
     private void setupDatabaseType(DatabaseType dbType) {
         Mockito.when(extensionMock.getDbType()).thenReturn(dbType)
+        Mockito.when(extensionMock.getDbVersion()).thenReturn(DB_VERSIONS[dbType] ?: "latest")
     }
 
     @Nested
@@ -32,15 +42,14 @@ class DatabaseTest {
         void shouldReturnCorrectCommandForPostgres() {
             def dbType = DatabaseType.POSTGRESQL
             setupDatabaseType(dbType)
-            Mockito.when(extensionMock.getDbVersion()).thenReturn("16")
 
             Database database = new Database(extensionMock)
             List<String> command = database.buildRunCommand()
 
-            def expectedImage = String.format(dbType.dockerImageFormat, "16")
+            def expectedImage = dbType.getDockerImageName(DB_VERSIONS[dbType])
             def expectedCommand = [
                     'docker', 'run', '--name', Database.DOCKER_CONTAINER_NAME, '-d',
-                    '-p', "${dbType.defaultPort}",
+                    '-p', "${dbType.defaultPort}:${dbType.defaultPort}",
                     '-e', "POSTGRES_USER=${dbType.defaultUser}",
                     '-e', "POSTGRES_PASSWORD=${dbType.defaultPassword}",
                     '-e', "POSTGRES_DB=${dbType.defaultDbName}",
@@ -59,7 +68,7 @@ class DatabaseTest {
             Database database = new Database(extensionMock)
             List<String> command = database.buildRunCommand()
 
-            def expectedImage = String.format(dbType.dockerImageFormat, "latest")
+            def expectedImage = dbType.getDockerImageName(DB_VERSIONS[dbType])
             def expectedCommand = [
                     'docker', 'run', '--name', Database.DOCKER_CONTAINER_NAME, '-d',
                     '-p', "${dbType.defaultPort}",
@@ -80,7 +89,7 @@ class DatabaseTest {
             Database database = new Database(extensionMock)
             List<String> command = database.buildRunCommand()
 
-            def expectedImage = String.format(dbType.dockerImageFormat, "latest")
+            def expectedImage = dbType.getDockerImageName(DB_VERSIONS[dbType])
             def expectedCommand = [
                     'docker', 'run', '--name', Database.DOCKER_CONTAINER_NAME, '-d',
                     '-p', "${dbType.defaultPort}",
@@ -127,7 +136,7 @@ class DatabaseTest {
             Database database = new Database(extensionMock)
             List<String> command = database.buildRunCommand()
 
-            def expectedImage = String.format(dbType.dockerImageFormat, "latest")
+            def expectedImage = dbType.getDockerImageName(DB_VERSIONS[dbType])
             def expectedCommand = [
                     'docker', 'run', '--name', Database.DOCKER_CONTAINER_NAME, '-d',
                     '-p', "${dbType.defaultPort}",

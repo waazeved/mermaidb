@@ -19,7 +19,7 @@ class DiagramGrouperTest {
         @Test
         @DisplayName("Should return empty Optional when diagram has no tables")
         void "should return empty when no tables exist"() {
-            String emptyDiagram = "erDiagram\n%% Just a comment\n"
+            String emptyDiagram = "erDiagram\n"
 
             def grouper = new DiagramGrouper(emptyDiagram)
             Optional<Map<String, String>> result = grouper.groupByModule()

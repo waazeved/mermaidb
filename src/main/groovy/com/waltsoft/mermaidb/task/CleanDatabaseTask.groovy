@@ -18,9 +18,9 @@ class CleanDatabaseTask implements Task {
 
     @Override
     void register() {
-        project.tasks.register(TASK_NAME, Exec) {
-            commandLine database.buildRemoveCommand()
-            ignoreExitValue = true
+        project.tasks.register(TASK_NAME, Exec) { Exec exec ->
+            exec.commandLine database.buildRemoveCommand()
+            exec.ignoreExitValue = true
         }
     }
 

@@ -18,28 +18,33 @@ class DiagramGenerator {
 
     List<String> buildCommand(String diagramFilePath) {
         def rootDir = project.layout.projectDirectory.asFile.absolutePath.replace("\\", "/")
+        String dbHost = Database.DOCKER_CONTAINER_NAME
+        String mermerdCommand = buildMermerdCommand(diagramFilePath, dbHost)
 
         return ['docker', 'run', '--rm',
-                '--link', "${Database.DOCKER_CONTAINER_NAME}:db",
+                '--link', "${dbHost}:db",
                 '-v', "${rootDir}:/workspace",
                 'golang:alpine',
-                'sh', '-c', buildMermerdCommand(diagramFilePath)]
+                'sh', '-c', mermerdCommand]
     }
 
-    private String buildMermerdCommand(String diagramFilePath) {
+    String buildMermerdCommand(String diagramFilePath, String dbHost) {
         return "echo '⏳ Compiling Mermerd (This may take a few minutes)...' && " +
                 "apk add --no-cache git && " +
                 "go install github.com/KarnerTh/mermerd@${VERSION} && " +
                 "/go/bin/mermerd " +
-                "-c \"${buildDatabaseUrl()}\" " +
+                "-c \"${buildDatabaseUrl(dbHost)}\" " +
                 "--schema public " +
                 "--useAllTables " +
-                "--outputFileName /workspace/${diagramFilePath}"
+                "--outputFileName /workspace/${diagramFilePath} " +
+                "--debug"
     }
 
-    private String buildDatabaseUrl() {
+    private String buildDatabaseUrl(String dbHost) {
+        String urlFormat = extension.dbType.mermerdUrlFormat.replace('@db:', "@${dbHost}:")
+        
         return String.format(
-                extension.dbType.mermerdUrlFormat,
+                urlFormat,
                 extension.dbType.defaultUser,
                 extension.dbType.defaultPassword,
                 extension.dbType.defaultPort,
