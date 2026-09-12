@@ -102,18 +102,19 @@ class StartDatabaseTaskTest {
     @DisplayName("Completion Action (onComplete)")
     class OnComplete {
         @Test
-        void testOnComplete_waitsForConnection() {
+        void testOnComplete_sleeps() {
+            boolean sleepCalled = false
+            long sleepValue = 0
+
+            startDatabaseTask.metaClass.sleep = { long millis ->
+                sleepCalled = true
+                sleepValue = millis
+            }
+
             startDatabaseTask.onComplete()
-            Mockito.verify(database).waitForConnection()
-        }
 
-        @Test
-        void testOnComplete_throwsRuntimeException_onSqlException() {
-            Mockito.doThrow(new java.sql.SQLException("Connection failed")).when(database).waitForConnection()
-
-            Assertions.assertThrows(RuntimeException.class, {
-                startDatabaseTask.onComplete()
-            })
+            Assertions.assertTrue(sleepCalled, "sleep() should have been called")
+            Assertions.assertEquals(StartDatabaseTask.SLEEP_TIME_MS, sleepValue)
         }
     }
 

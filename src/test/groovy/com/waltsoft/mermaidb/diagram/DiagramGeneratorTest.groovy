@@ -47,8 +47,10 @@ class DiagramGeneratorTest {
     }
 
     private List<String> buildExpectedCommand(String projectPath, String diagramPath, DatabaseType dbType) {
+        String urlFormat = dbType.mermerdUrlFormat.replace("@db:", "@${Database.DOCKER_CONTAINER_NAME}:")
+
         def dbUrl = String.format(
-                dbType.mermerdUrlFormat,
+                urlFormat,
                 dbType.defaultUser,
                 dbType.defaultPassword,
                 dbType.defaultPort,
@@ -62,7 +64,8 @@ class DiagramGeneratorTest {
                 "-c \"${dbUrl}\" " +
                 "--schema public " +
                 "--useAllTables " +
-                "--outputFileName /workspace/${diagramPath}"
+                "--outputFileName /workspace/${diagramPath} " +
+                "--debug"
 
         return ['docker', 'run', '--rm',
                 '--link', "${Database.DOCKER_CONTAINER_NAME}:db",

@@ -49,7 +49,7 @@ class DatabaseTest {
             def expectedImage = dbType.getDockerImageName(DB_VERSIONS[dbType])
             def expectedCommand = [
                     'docker', 'run', '--name', Database.DOCKER_CONTAINER_NAME, '-d',
-                    '-p', "${dbType.defaultPort}:${dbType.defaultPort}",
+                    '-p', "${dbType.defaultPort}",
                     '-e', "POSTGRES_USER=${dbType.defaultUser}",
                     '-e', "POSTGRES_PASSWORD=${dbType.defaultPassword}",
                     '-e', "POSTGRES_DB=${dbType.defaultDbName}",

@@ -11,6 +11,7 @@ import java.sql.SQLException
 class StartDatabaseTask implements Task {
 
     public static final String TASK_NAME = 'startDatabase'
+    public static final int SLEEP_TIME_MS = 6000
 
     private final Extension extension
     private final Project project
@@ -42,7 +43,7 @@ class StartDatabaseTask implements Task {
 
     void onComplete() {
         println "Waiting for ${extension.dbType} database to start..."
-        sleep(6000)
+        sleep(SLEEP_TIME_MS)
         println "Database container should be ready."
     }
 

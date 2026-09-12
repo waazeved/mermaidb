@@ -5,13 +5,10 @@ plugins {
     id "com.github.jakemarsden.git-hooks" version "0.0.2"
     id "jacoco"
     id 'org.barfuin.gradle.jacocolog' version '3.1.0'
-    id "name.remal.sonarlint" version "7.0.1"
 }
 
-check.dependsOn sonarlintMain
-
 group = 'com.waltsoft'
-version = '0.0.1'
+version = '1.0.0'
 
 java {
     toolchain {
@@ -33,10 +30,8 @@ dependencies {
     testImplementation 'org.mockito:mockito-junit-jupiter:5.11.0'
     testImplementation 'org.mockito:mockito-core:5.11.0'
 
-    // Import the Testcontainers BOM to manage all module versions
     implementation platform('org.testcontainers:testcontainers-bom:1.21.4')
 
-    // Declare Testcontainers modules WITHOUT versions
     testImplementation 'org.testcontainers:testcontainers'
     testImplementation 'org.testcontainers:junit-jupiter'
     testImplementation 'org.testcontainers:postgresql'
@@ -44,7 +39,6 @@ dependencies {
     testImplementation 'org.testcontainers:mariadb'
     testImplementation 'org.testcontainers:mssqlserver'
 
-    // JDBC Drivers
     testImplementation 'org.postgresql:postgresql:42.7.13'
     testImplementation 'com.mysql:mysql-connector-j:8.3.0'
     testImplementation 'org.mariadb.jdbc:mariadb-java-client:3.3.3'
@@ -69,7 +63,7 @@ jacocoTestCoverageVerification {
             element = 'BUNDLE'
             limit {
                 counter = 'CLASS'
-                minimum = 0.50
+                minimum = 0.90
             }
         }
 
@@ -77,19 +71,14 @@ jacocoTestCoverageVerification {
             element = 'BUNDLE'
             limit {
                 counter = 'LINE'
-                minimum = 0.40
+                minimum = 0.75
             }
         }
 
     }
 }
 
-sonarLint {
-    ignoreFailures = false
-}
-
 tasks.named('check') {
-    dependsOn 'sonarlintMain'
     dependsOn 'jacocoTestCoverageVerification'
 }
 

@@ -6,6 +6,8 @@ import com.waltsoft.mermaidb.extension.Extension
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.artifacts.dsl.DependencyHandler
+import org.gradle.api.internal.project.ProjectInternal
+import org.gradle.testfixtures.ProjectBuilder
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
@@ -38,16 +40,17 @@ class LiquibaseMigrationTest {
         @Test
         @DisplayName("Should add all required dependencies for a given database type")
         void shouldAddAllRequiredDependencies() {
-            Project projectMock = Mockito.mock(Project.class)
-            Configuration configurationMock = Mockito.mock(Configuration.class)
+
+            Project project = ProjectBuilder.builder().build()
             DependencyHandler dependencyHandlerMock = Mockito.mock(DependencyHandler.class)
+            project.metaClass.getDependencies = { -> dependencyHandlerMock }
+            Configuration configuration = project.getConfigurations().create(CONFIGURATION_NAME)
             Extension extension = new Extension()
             extension.dbType = DatabaseType.POSTGRESQL
 
-            Mockito.when(projectMock.getDependencies()).thenReturn(dependencyHandlerMock)
-            Mockito.when(configurationMock.getName()).thenReturn(CONFIGURATION_NAME)
+            liquibaseMigration.applyDependencies(project, configuration, extension)
 
-            liquibaseMigration.applyDependencies(projectMock, configurationMock, extension)
+            ((ProjectInternal) project).evaluate()
 
             Mockito.verify(dependencyHandlerMock).add(CONFIGURATION_NAME, PICOCLI_DEPENDENCY)
             Mockito.verify(dependencyHandlerMock).add(CONFIGURATION_NAME, LIQUIBASE_DEPENDENCY)
