@@ -20,7 +20,7 @@ class MermaidbPlugin implements Plugin<Project> {
 
         project.afterEvaluate {
             new ExtensionValidator(extension).validate()
-            println "*** 🧜‍♀️ Mermaidb Plugin loaded successfully with database ${extension.dbType} ***"
+            println "*** 🧜‍♀️🛢️ Mermaidb plugin loaded successfully ***"
         }
     }
 
