@@ -5,6 +5,7 @@ plugins {
     id "com.github.jakemarsden.git-hooks" version "0.0.2"
     id "jacoco"
     id 'org.barfuin.gradle.jacocolog' version '3.1.0'
+    id "com.gradle.plugin-publish" version "1.2.1"
 }
 
 group = 'com.waltsoft'
@@ -96,6 +97,14 @@ gradlePlugin {
         mermaidbPlugin {
             id = 'com.waltsoft.mermaidb'
             implementationClass = 'com.waltsoft.mermaidb.MermaidbPlugin'
+            displayName = 'Mermaidb'
+            description = 'A Gradle plugin to automates the generation of Entity-Relationship (ER) diagrams in Mermaid format directly from your database schema.'
         }
     }
+}
+
+pluginBundle {
+    website = 'https://github.com/waazeved/mermaidb'
+    vcsUrl = 'https://github.com/waazeved/mermaidb.git'
+    tags = ['diagram', 'database', 'mermaid', 'documentation']
 }

@@ -50,6 +50,17 @@ This approach treats your database schema documentation as a first-class citizen
 
 ---
 
+## ✅ Prerequisites & Compatibility
+
+Before you begin, ensure your development environment meets the following requirements:
+
+*   **Docker**: Must be installed and running, as the plugin relies on it to create ephemeral database containers.
+*   **Liquibase**: Your project must use Liquibase to manage database migrations.
+*   **Java**: Version 11 or newer.
+*   **Gradle**: Version 7.6 or newer.
+
+---
+
 ## 🚀 Getting Started
 
 ### 1. Apply the Plugin
