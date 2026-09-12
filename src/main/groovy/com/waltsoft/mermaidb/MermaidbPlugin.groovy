@@ -12,7 +12,6 @@ import org.gradle.api.Project
 class MermaidbPlugin implements Plugin<Project> {
 
     void apply(Project project) {
-        project.logger.lifecycle("--- Mermaidb Plugin Loaded Successfully ---")
 
         def extension = project.extensions.create('mermaidb', Extension)
 
@@ -21,7 +20,7 @@ class MermaidbPlugin implements Plugin<Project> {
 
         project.afterEvaluate {
             new ExtensionValidator(extension).validate()
-            println "🚀 Starting Mermaidb with database: ${extension.dbType}"
+            println "*** 🧜‍♀️ Mermaidb Plugin loaded successfully with database ${extension.dbType} ***"
         }
     }
 
@@ -78,19 +77,30 @@ class MermaidbPlugin implements Plugin<Project> {
     }
 
     @Memoized
-    boolean shouldRunPipeline(Project project, Extension extension){
+    boolean shouldRunPipeline(Project project, Extension extension) {
         def git = new Git(project, extension)
-        shouldRunPipelineByGit(project, git);
+        shouldRunPipelineByGit(project, git)
     }
 
     boolean shouldRunPipelineByGit(Project project, Git git) {
+
         boolean forceGenerate = project.hasProperty("forceGenerate")
                 ? project.property("forceGenerate").toString().toBoolean() : false
 
         if (forceGenerate) {
+            println "🔄 Force generate is ON. Starting Mermaid diagram generation..."
             return true
         }
 
-        return git.checkIfMigrationsChanged()
+        boolean changed = git.checkIfMigrationsChanged()
+
+        if (!changed) {
+            println "✅ No changes found in the migrations file. Skipping Mermaidb tasks to save time."
+            println "💡 (Tip: run with -PforceGenerate=true to force the generation)"
+        } else {
+            println "🔄 Migrations detected! Starting Mermaid diagram generation..."
+        }
+
+        return changed
     }
 }

@@ -1,187 +1,206 @@
-# Mermaidb Gradle Plugin 🧜‍♀️
+# Mermaidb Gradle Plugin 🧜‍♀️🛢️
 
 [![Gradle Plugin Portal](https://img.shields.io/badge/Gradle%20Plugin%20Portal-v1.0.0-blue.svg)](https://plugins.gradle.org/plugin/com.waltsoft.mermaidb)
 [![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)](https://github.com/waazeved/mermaidb)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-**Mermaidb** is a powerful Gradle plugin that automates the generation of Entity-Relationship (ER) diagrams in Mermaid
-format directly from your database schemas. It manages the entire lifecycle, from setting up an ephemeral database to
-generating and organizing your diagrams.
+**Mermaidb** is a Gradle plugin that automates the generation of Entity-Relationship (ER) diagrams in [Mermaid](https://mermaid.ai/open-source/syntax/entityRelationshipDiagram.html) format directly from your database schema.
+
+It keeps your ER diagrams consistently updated with every schema change, effortlessly.
 
 ---
 
-## 📜 Overview
+## 🤔 Why Keep ER Diagrams Updated?
 
-The plugin streamlines the process of database visualization by:
+Keeping an ER diagram in sync with your database schema is a strategic advantage for modern development teams.
 
-1. 🚀 **Spinning up an ephemeral database** using a Docker container (e.g., PostgreSQL, MySQL).
-2. 🔄 **Applying database migrations** via Liquibase to build the schema.
-3. 🔍 **Extracting the schema** into a `.mmd` file using the powerful [Mermerd CLI](https://github.com/KarnerTh/mermerd).
-4. ✨ **Applying visual and structural enhancements** to the generated diagram.
-5. 🗑️ **Tearing down the Docker container** automatically, leaving your environment clean.
+### The "Documentation-as-Code" Advantage
 
-This allows you to keep your ER diagrams consistently updated with every schema change, effortlessly.
+Mermaidb embraces a **Documentation-as-Code** philosophy, which offers significant advantages over traditional database visualization tools that connect directly to a live database:
 
----
+*   **Versioned and Reviewable**: Because the diagram is a text file (`.mmd`), it lives in your Git repository. Schema changes can be visually reviewed as part of a pull request, just like any other code change.
+*   **Enhanced Security**: The diagram is generated from your local migration files within a temporary, isolated environment. You never need to grant a third-party tool access to your staging or production database credentials.
+*   **Guaranteed Consistency**: By integrating diagram generation into your development workflow (e.g., via Git hooks), you ensure the documentation is never out of sync with the actual schema.
+*   **Ultimate Portability**: The generated `.mmd` file is plain text. It can be rendered by numerous tools, embedded in wikis, or shared easily, without requiring a database connection.
 
-## 📋 Prerequisites
+This approach treats your database schema documentation as a first-class citizen of your codebase, making it more reliable, secure, and collaborative.
 
-To use the Mermaidb plugin, your development environment must have the following tools installed:
+### For Development Teams & DBAs
 
-* **Java & Gradle**: Essential for running the plugin.
-* **Docker**: Required for creating ephemeral database containers and running the Mermerd CLI image.
-* **Git**: Used for the smart pipeline optimization feature.
+*   **Clear Communication**: An up-to-date diagram is a single source of truth, facilitating communication between developers, DBAs, and architects.
+*   **Simplified Planning**: When planning new features or schema changes, engineers can copy the diagram's code into an editor like [Mermaid.live](https://mermaid.live), experiment with modifications, and visualize the impact in real-time. This simplifies writing user stories and planning database migrations.
+*   **Faster Onboarding**: New team members can quickly understand the database structure, accelerating their integration into the project.
 
----
+### For AI-Assisted Development
 
-## ✅ Compatibility
-
-The plugin is designed to be compatible with a wide range of modern development environments.
-
-| **Software** | **Supported Versions** |
-|--------------|------------------------|
-| **Gradle**   | `7.6` or newer         |
-| **Java**     | `11` or newer          |
+*   **Enhanced AI Context**: When working with AI assistants (like **GitHub Copilot, Google Gemini, or Anthropic Claude**), providing the current ER diagram as context allows the AI to understand your database structure deeply.
+*   **Fewer Errors**: With a clear understanding of tables, columns, and relationships, the AI is less likely to make mistakes when generating database queries, migrations, or application code, leading to more accurate and reliable results.
 
 ---
 
-## 🛠️ For Developers: How to Test Locally
+## ✨ Features
 
-If you want to contribute to Mermaidb, you can easily test your changes locally.
-
-1. **Publish to Maven Local**:
-   Run the following command to publish the plugin to your local Maven repository:
-   ```bash
-   ./gradlew publishToMavenLocal
-   ```
-
-2. **Configure the Consumer Project**:
-   In the project where you want to test the plugin, add `mavenLocal()` to the `pluginManagement` block in your
-   `settings.gradle` file. This tells Gradle to look for the plugin in your local repository.
-
-   ```groovy
-   // settings.gradle
-   pluginManagement {
-       repositories {
-           mavenLocal() // Add this line
-           gradlePluginPortal()
-           // other repositories...
-       }
-   }
-   ```
-
-Now you can apply and configure the plugin in your `build.gradle` as usual.
+*   🚀 **Ephemeral Database**: Spins up a temporary database in a Docker container to build the schema safely.
+*   🔄 **Liquibase Integration**: Applies your Liquibase migrations to construct the schema.
+*   🔍 **Automatic Diagram Generation**: Extracts the schema into a `.mmd` file using the [Mermerd CLI](https://github.com/KarnerTh/mermerd).
+*   🧩 **Modular Diagrams**: Intelligently groups tables into smaller, domain-focused diagrams for better readability.
+*   ⚡️ **Smart Git Integration**: Optimizes the build by only running when database migration files have changed.
+*   ⚙️ **Automatic Git Add**: Automatically stages generated diagrams with `git add` to include them in your next commit.
+*   💪 **Force Generation**: Allows forcing the diagram regeneration, bypassing the smart Git check.
 
 ---
 
-## ⚙️ Configuration & Usage
+## 🚀 Getting Started
 
-Getting started with Mermaidb is simple.
+### 1. Apply the Plugin
 
-1. **Apply and Configure the Plugin**:
-   In your `build.gradle` file, apply the plugin and configure the `mermaidb` extension with your project's specific
-   settings.
+In your `build.gradle` file, apply the plugin using its ID and desired version. The current version is `1.0.0`.
 
-   ```groovy
-   // build.gradle
-   plugins {
-       id 'com.waltsoft.mermaidb' version '1.0.0' // Use the desired version
-   }
+```groovy
+// build.gradle
+plugins {
+    id 'com.waltsoft.mermaidb' version '1.0.0'
+}
+```
 
-   mermaidb {
-       // The type of database to use (e.g., 'postgresql', 'mysql')
-       dbType = 'postgresql'
+### 2. Configure the `mermaidb` Extension
 
-       // Path to your Liquibase changelog file
-       changeLogFilePath = 'src/main/resources/db/changelog/db.changelog-master.xml'
+Configure the plugin with your project's specific settings.
 
-       // Directory where the generated diagrams will be saved
-       outputDirPath = 'docs/diagrams/db'
+```groovy
+// build.gradle
+mermaidb {
+    dbType = 'POSTGRESQL'
+    dbVersion = '16'
+    changeLogFilePath = 'db/changelog/changelog-master.xml'
+    outputDirPath = 'docs/diagrams/db'
+    autoGitAdd = true
+}
+```
 
-       // Enable/disable automatic 'git add' for generated diagrams
-       autoGitAdd = true
-   }
-   ```
+#### Configuration Options
 
-2. **Run the Generation Task**:
-   Execute the following command in your terminal to generate the diagrams:
-   ```bash
-   ./gradlew generateDatabaseDiagram
-   ```
+| Property              | Description                                                                                                                                       | Required | Default Value |
+|-----------------------|---------------------------------------------------------------------------------------------------------------------------------------------------|----------|---------------|
+| `dbType`              | The type of database to use. Supported: `POSTGRESQL`, `ALLOYDB`, `MYSQL`, `SQLSERVER`, `SQLITE`, `MARIADB`, `COCKROACHDB`, `TIDB`.                | **Yes**  | `null`        |
+| `changeLogFilePath`   | The relative path to your master Liquibase changelog file.                                                                                        | **Yes**  | `null`        |
+| `outputDirPath`       | The directory where the generated `.mmd` diagram files will be saved.                                                                             | **Yes**  | `null`        |
+| `dbVersion`           | The Docker image tag for the chosen database (e.g., `16` for `postgres:16`).                                                                      | **Yes*** | `null`        |
+| `dbCustomDockerImage` | A custom Docker image for the database (e.g., `postgis/postgis:16-3.4`). Use this for images with extensions like PostGIS. Overrides `dbVersion`. | No       | `null`        |
+| `autoGitAdd`          | If `true`, automatically runs `git add` on the generated diagrams.                                                                                | No       | `false`       |
+| `uppercaseColumns`    | If `true`, converts all column names in the diagram to uppercase.                                                                                 | No       | `false`       |
+
+*\*`dbVersion` is required if `dbCustomDockerImage` is not provided (and `dbType` is not `SQLITE`).*
+
+### 3. Generate the Diagram
+
+Execute the following command in your terminal:
+
+```bash
+./gradlew generateDatabaseDiagram
+```
+
+The generated diagrams will be available in the directory specified in `outputDirPath`.
 
 ---
 
-## ⚡️ Smart Git Integration
+## ⚡️ Advanced Usage
 
-Mermaidb includes a smart integration with Git to optimize your build pipeline and save valuable time.
+### Automating with Git Hooks
 
-### Conditional Execution
+To ensure your diagrams are always up-to-date with your schema, you can configure the plugin to run automatically before each commit using a Git pre-commit hook.
 
-To avoid unnecessary work, the plugin performs a `git diff --name-only --cached` check before running. It will only
-proceed with the diagram generation if it detects that database migration files have been staged (via `git add`).
+This example uses the `com.github.jakemarsden.git-hooks` plugin to trigger the `generateDatabaseDiagram` task.
 
-This means your diagrams are only regenerated when the schema has actually changed.
+```groovy
+// build.gradle
+
+// Apply the git-hooks plugin
+plugins {
+    id "com.github.jakemarsden.git-hooks" version "0.0.2"
+    id 'com.waltsoft.mermaidb' version '1.0.0'
+}
+
+// Add the diagram generation task to your 'check' task
+tasks.named('check') {
+    dependsOn 'generateDatabaseDiagram'
+}
+
+// Configure the pre-commit hook to run 'check'
+gitHooks {
+    hooks = ['pre-commit': 'check']
+}
+
+mermaidb {
+    // Your configuration here...
+    autoGitAdd = true // Recommended for pre-commit hooks
+}
+```
+
+With this setup, your diagrams will be regenerated and staged for commit automatically whenever you change your database schema.
 
 ### Forcing Generation
 
-If you need to regenerate the diagrams regardless of the Git state, you can use the `-PforceGenerate=true` flag:
+To regenerate diagrams regardless of the Git state, use the `-PforceGenerate=true` flag:
 
 ```bash
 ./gradlew generateDatabaseDiagram -PforceGenerate=true
 ```
 
-### Automatic Git Add
-
-When the `autoGitAdd` property is set to `true`, the plugin will automatically stage the generated `.mmd` files for you
-by running `git add` on the output directory. This helps ensure your diagrams are always included in your next commit.
-
 ---
 
-## 🧩 Modular Diagram Generation
+## 🛠️ For Developers (Contributing)
 
-Beyond creating a single, monolithic ER diagram, Mermaidb intelligently organizes your schema into smaller, more
-manageable **Module Diagrams**.
+If you want to contribute to Mermaidb, you can easily test your changes locally.
 
-* **Automatic Grouping**: Using an internal `DiagramModuleGrouper`, the plugin analyzes table names and relationships to
-  group them into logical modules or domains.
-* **Visual Ordering**: The `DiagramTableOrderer` then arranges the tables within each module diagram using a "visual
-  gravity" algorithm, placing central tables in the middle and related ones around them for maximum clarity.
-* **Organized Output**: The final diagrams are saved neatly into subfolders within your specified output directory,
-  making it easy to navigate and find the specific domain you're interested in.
+### How to Test Locally
 
-This feature is perfect for large, complex schemas, as it provides both a high-level overview and detailed,
-domain-specific views of your database architecture.
+1.  **Publish to Maven Local**:
+    Run the following command to publish the plugin to your local Maven repository:
+    ```bash
+    ./gradlew publishToMavenLocal
+    ```
 
-## Tests
+2.  **Configure the Consumer Project**:
+    In the project where you want to test the plugin, add `mavenLocal()` to the `pluginManagement` block in your `settings.gradle` file.
 
-To execute all test, you can run with:
+    ```groovy
+    // settings.gradle
+    pluginManagement {
+        repositories {
+            mavenLocal() // Add this line
+            gradlePluginPortal()
+        }
+    }
+    ```
 
+### Running Tests
+
+To execute all tests, you can run:
 ```bash
 ./gradlew test
 ```
 
-To execute all tests in some test class, run:
-
+To execute all tests in a specific test class, run:
 ```bash
 ./gradlew test --tests SomeTestClass
 ```
 
-To execute a single specified test in some test class, run:
-
+To execute a single specified test in a class, run:
 ```bash
 ./gradlew test --tests SomeTestClass.someSpecificMethod
 ```
 
-To execute tests with debug logs, include `DEBUG=true` before command:
+### Code Quality Check
 
-```bash
-DEBUG=true ./gradlew test
-```
-
-## Check
-
-To run all tests, verify code quality and java code style, use command below:
-
+To run all tests and verify code quality and style, use the command below:
 ```bash
 ./gradlew check
+```
+
+---
+
+## 📜 License
+
+This project is licensed under the Apache License 2.0. See the [LICENSE](LICENSE) file for details.
 ```
