@@ -1,0 +1,110 @@
+plugins {
+    id 'groovy'
+    id 'java-gradle-plugin'
+    id 'maven-publish'
+    id "com.github.jakemarsden.git-hooks" version "0.0.2"
+    id "jacoco"
+    id 'org.barfuin.gradle.jacocolog' version '3.1.0'
+    id "com.gradle.plugin-publish" version "1.2.1"
+}
+
+group = 'com.waltsoft'
+version = '1.0.0'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(11)
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation gradleApi()
+    implementation localGroovy()
+
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.10.2'
+
+    testImplementation 'org.mockito:mockito-junit-jupiter:5.11.0'
+    testImplementation 'org.mockito:mockito-core:5.11.0'
+
+    implementation platform('org.testcontainers:testcontainers-bom:1.21.4')
+
+    testImplementation 'org.testcontainers:testcontainers'
+    testImplementation 'org.testcontainers:junit-jupiter'
+    testImplementation 'org.testcontainers:postgresql'
+    testImplementation 'org.testcontainers:mysql'
+    testImplementation 'org.testcontainers:mariadb'
+    testImplementation 'org.testcontainers:mssqlserver'
+
+    testImplementation 'org.postgresql:postgresql:42.7.13'
+    testImplementation 'com.mysql:mysql-connector-j:8.3.0'
+    testImplementation 'org.mariadb.jdbc:mariadb-java-client:3.3.3'
+    testImplementation 'com.microsoft.sqlserver:mssql-jdbc:12.6.1.jre11'
+}
+
+test {
+    useJUnitPlatform()
+    testLogging {
+        exceptionFormat = 'full'
+        events "passed", "skipped", "failed"
+        showStandardStreams = (System.getenv('DEBUG') != null)
+    }
+
+    finalizedBy jacocoTestReport
+}
+
+jacocoTestCoverageVerification {
+
+    violationRules {
+        rule {
+            element = 'BUNDLE'
+            limit {
+                counter = 'CLASS'
+                minimum = 0.90
+            }
+        }
+
+        rule {
+            element = 'BUNDLE'
+            limit {
+                counter = 'LINE'
+                minimum = 0.75
+            }
+        }
+
+    }
+}
+
+tasks.named('check') {
+    dependsOn 'jacocoTestCoverageVerification'
+}
+
+gitHooks {
+    hooks = ['pre-commit': 'check']
+}
+
+
+tasks.withType(ProcessResources).configureEach {
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+}
+
+gradlePlugin {
+    plugins {
+        mermaidbPlugin {
+            id = 'com.waltsoft.mermaidb'
+            implementationClass = 'com.waltsoft.mermaidb.MermaidbPlugin'
+            displayName = 'Mermaidb'
+            description = 'A Gradle plugin to automates the generation of Entity-Relationship (ER) diagrams in Mermaid format directly from your database schema.'
+        }
+    }
+}
+
+pluginBundle {
+    website = 'https://github.com/waazeved/mermaidb'
+    vcsUrl = 'https://github.com/waazeved/mermaidb.git'
+    tags = ['diagram', 'database', 'mermaid', 'documentation']
+}
