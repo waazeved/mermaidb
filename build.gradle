@@ -8,8 +8,8 @@ plugins {
     id "com.gradle.plugin-publish" version "1.2.1"
 }
 
-group = 'com.waltsoft'
-version = '1.0.0'
+group = 'io.github.waazeved'
+version = '1.0.1'
 
 java {
     toolchain {
@@ -95,8 +95,8 @@ tasks.withType(ProcessResources).configureEach {
 gradlePlugin {
     plugins {
         mermaidbPlugin {
-            id = 'com.waltsoft.mermaidb'
-            implementationClass = 'com.waltsoft.mermaidb.MermaidbPlugin'
+            id = 'io.github.waazeved.mermaidb'
+            implementationClass = 'io.github.waazeved.mermaidb.MermaidbPlugin'
             displayName = 'Mermaidb'
             description = 'A Gradle plugin to automates the generation of Entity-Relationship (ER) diagrams in Mermaid format directly from your database schema.'
         }
