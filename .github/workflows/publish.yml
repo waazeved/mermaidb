@@ -6,7 +6,7 @@ name: Publish Gradle Plugin
 on:
   push:
     tags:
-      - 'v*.*.*' # O gatilho agora é a criação de uma tag, não um push na main
+      - 'v*.*.*'
 
 jobs:
   publish:
@@ -33,7 +33,6 @@ jobs:
         run: ./gradlew check
 
       # 5. Publish to Gradle Plugin Portal
-      # Agora, se der erro aqui, é um erro real de publicação, pois a tag é nova.
       - name: Publish to Gradle Plugin Portal
         run: ./gradlew publishPlugins
         env:
