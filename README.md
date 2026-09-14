@@ -202,7 +202,7 @@ To execute a single specified test in a class, run:
 ./gradlew test --tests SomeTestClass.someSpecificMethod
 ```
 
-### Code Quality Check
+### Check
 
 To run all tests and verify code quality and style, use the command below:
 ```bash
