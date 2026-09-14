@@ -1,7 +1,7 @@
 # Mermaidb Gradle Plugin 🧜‍♀️🛢️
 
 [![Gradle Plugin Portal](https://img.shields.io/badge/Gradle%20Plugin%20Portal-v1.0.1-blue.svg)](https://plugins.gradle.org/plugin/io.github.waazeved.mermaidb)
-[![CI Build](https://github.com/waazeved/mermaidb/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/waazeved/mermaidb/actions/workflows/ci.yml)
+[![CI Build](https://github.com/waazeved/mermaidb/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/waazeved/mermaidb/actions/workflows/build.yml)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 **Mermaidb** is a Gradle plugin that automates the generation of Entity-Relationship (ER) diagrams in [Mermaid](https://mermaid.ai/open-source/syntax/entityRelationshipDiagram.html) format directly from your database schema.
