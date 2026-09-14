@@ -1,7 +1,7 @@
 # Mermaidb Gradle Plugin 🧜‍♀️🛢️
 
-[![Gradle Plugin Portal](https://img.shields.io/badge/Gradle%20Plugin%20Portal-v1.0.0-blue.svg)](https://plugins.gradle.org/plugin/com.waltsoft.mermaidb)
-[![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)](https://github.com/waazeved/mermaidb)
+[![Gradle Plugin Portal](https://img.shields.io/badge/Gradle%20Plugin%20Portal-v1.0.1-blue.svg)](https://plugins.gradle.org/plugin/io.github.waazeved.mermaidb)
+[![CI Build](https://github.com/waazeved/mermaidb/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/waazeved/mermaidb/actions/workflows/build.yml)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 **Mermaidb** is a Gradle plugin that automates the generation of Entity-Relationship (ER) diagrams in [Mermaid](https://mermaid.ai/open-source/syntax/entityRelationshipDiagram.html) format directly from your database schema.
@@ -65,12 +65,12 @@ Before you begin, ensure your development environment meets the following requir
 
 ### 1. Apply the Plugin
 
-In your `build.gradle` file, apply the plugin using its ID and desired version. The current version is `1.0.0`.
+In your `build.gradle` file, apply the plugin using its ID and desired version. The current version is `1.0.1`.
 
 ```groovy
 // build.gradle
 plugins {
-    id 'com.waltsoft.mermaidb' version '1.0.0'
+    id 'com.waltsoft.mermaidb' version '1.0.1'
 }
 ```
 
@@ -129,7 +129,7 @@ This example uses the `com.github.jakemarsden.git-hooks` plugin to trigger the `
 // Apply the git-hooks plugin
 plugins {
     id "com.github.jakemarsden.git-hooks" version "0.0.2"
-    id 'com.waltsoft.mermaidb' version '1.0.0'
+    id 'com.waltsoft.mermaidb' version '1.0.1'
 }
 
 // Add the diagram generation task to your 'check' task
@@ -202,7 +202,7 @@ To execute a single specified test in a class, run:
 ./gradlew test --tests SomeTestClass.someSpecificMethod
 ```
 
-### Code Quality Check
+### Check
 
 To run all tests and verify code quality and style, use the command below:
 ```bash
@@ -211,7 +211,40 @@ To run all tests and verify code quality and style, use the command below:
 
 ---
 
+## Publishing a New Version
+
+The publication to the Gradle Plugin Portal is fully automated via GitHub Actions, but it is only triggered when a new version tag is created.
+
+To release a new version of the plugin:
+
+1.  **Update the version**: Change the version number in your `build.gradle` file (e.g., to `1.0.2`).
+
+2.  **Commit and Push**: Commit this change and push it to the `main` branch.
+
+3.  **Create a Tag/Release**: You can do this through the GitHub interface or via the command line.
+
+    *   **Option A: Using the GitHub Interface**
+        *   Go to the GitHub repository page and create a new Release.
+        *   Create a new tag matching the version format `v*.*.*` (e.g., `v1.0.2`).
+        *   Publish the release.
+
+    *   **Option B: Using the Command Line**
+        ```bash
+        # Switch to the main branch and ensure it's up-to-date
+        git checkout main
+        git pull origin main
+
+        # Create an annotated tag for the new version
+        git tag -a v1.0.2 -m "Release version 1.0.2"
+
+        # Push the tag to the remote repository
+        git push origin v1.0.2
+        ```
+
+Once the tag is published, the `Publish Gradle Plugin` workflow will automatically run and publish the new version to the Gradle Plugin Portal.
+
+---
+
 ## 📜 License
 
 This project is licensed under the Apache License 2.0. See the [LICENSE](LICENSE) file for details.
-```
