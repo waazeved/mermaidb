@@ -1,12 +1,12 @@
 # This workflow will build and publish the Gradle plugin to the Gradle Plugin Portal.
-# It is triggered on every push to the 'main' branch.
+# It is triggered whenever a new version tag (e.g., v1.0.2) is pushed.
 
-name: Publish Gradle Plugin on Main
+name: Publish Gradle Plugin
 
 on:
   push:
-    branches:
-      - 'main'
+    tags:
+      - 'v*.*.*' # O gatilho agora é a criação de uma tag, não um push na main
 
 jobs:
   publish:
@@ -29,18 +29,13 @@ jobs:
         run: chmod +x ./gradlew
 
       # 4. Run checks (tests, code quality, etc.)
-      #    If this step fails, the workflow will stop and the plugin will not be published.
       - name: Run checks
         run: ./gradlew check
 
       # 5. Publish to Gradle Plugin Portal
-      #    This step will fail the workflow if publishing is not possible.
+      # Agora, se der erro aqui, é um erro real de publicação, pois a tag é nova.
       - name: Publish to Gradle Plugin Portal
-        run: |
-          ./gradlew publishPlugins || {
-            echo "::warning::Could not publish plugin. This is expected if the version in build.gradle has not been updated."
-            exit 1
-          }
+        run: ./gradlew publishPlugins
         env:
           GRADLE_PUBLISH_KEY: ${{ secrets.GRADLE_PUBLISH_KEY }}
           GRADLE_PUBLISH_SECRET: ${{ secrets.GRADLE_PUBLISH_SECRET }}
