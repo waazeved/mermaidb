@@ -1,6 +1,6 @@
 # Mermaidb Gradle Plugin 🧜‍♀️🛢️
 
-[![Gradle Plugin Portal](https://img.shields.io/badge/Gradle%20Plugin%20Portal-v1.0.0-blue.svg)](https://plugins.gradle.org/plugin/com.waltsoft.mermaidb)
+[![Gradle Plugin Portal](https://img.shields.io/badge/Gradle%20Plugin%20Portal-v1.0.1-blue.svg)](https://plugins.gradle.org/plugin/io.github.waazeved.mermaidb)
 [![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)](https://github.com/waazeved/mermaidb)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
@@ -65,12 +65,12 @@ Before you begin, ensure your development environment meets the following requir
 
 ### 1. Apply the Plugin
 
-In your `build.gradle` file, apply the plugin using its ID and desired version. The current version is `1.0.0`.
+In your `build.gradle` file, apply the plugin using its ID and desired version. The current version is `1.0.1`.
 
 ```groovy
 // build.gradle
 plugins {
-    id 'com.waltsoft.mermaidb' version '1.0.0'
+    id 'com.waltsoft.mermaidb' version '1.0.1'
 }
 ```
 
@@ -129,7 +129,7 @@ This example uses the `com.github.jakemarsden.git-hooks` plugin to trigger the `
 // Apply the git-hooks plugin
 plugins {
     id "com.github.jakemarsden.git-hooks" version "0.0.2"
-    id 'com.waltsoft.mermaidb' version '1.0.0'
+    id 'com.waltsoft.mermaidb' version '1.0.1'
 }
 
 // Add the diagram generation task to your 'check' task
@@ -214,4 +214,3 @@ To run all tests and verify code quality and style, use the command below:
 ## 📜 License
 
 This project is licensed under the Apache License 2.0. See the [LICENSE](LICENSE) file for details.
-```
